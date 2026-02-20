@@ -112,16 +112,43 @@ body[data-theme='dark']::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0 12px;
-  margin-bottom: 8px;
+  padding: 20px 16px 16px;
+  margin-bottom: 10px;
   background: transparent;
   box-shadow: none;
   border: none;
-  border-radius: 0;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
 }
 
 .topbar:hover { box-shadow: none; border-color: transparent; }
 .eyebrow { display: none; }
+
+.topbar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(36, 24, 22, 0.2), rgba(36, 24, 22, 0.2)),
+    repeating-linear-gradient(
+      0deg,
+      #c16a4b 0px,
+      #c16a4b 22px,
+      #e4c8b2 22px,
+      #e4c8b2 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 46px,
+      #e4c8b2 46px,
+      #e4c8b2 48px
+    );
+  opacity: 0.28;
+  filter: saturate(0.95) contrast(0.95);
+}
 
 .topbar h1 {
   font-size: 1.35rem;
@@ -135,7 +162,7 @@ body[data-theme='dark']::before {
 
 .graffiti-title {
   font-family: 'Permanent Marker', 'Segoe UI', sans-serif;
-  font-size: clamp(1.45rem, 4.5vw, 2.05rem);
+  font-size: clamp(1.74rem, 5.4vw, 2.46rem);
   letter-spacing: 0.02em;
   transform: rotate(-1.2deg);
   position: relative;
@@ -177,6 +204,26 @@ body[data-theme='dark'] .graffiti-title {
   text-shadow:
     0 0 10px rgba(255, 255, 255, 0.08),
     2px 2px 0 rgba(36, 209, 100, 0.45);
+}
+
+body[data-theme='dark'] .topbar::before {
+  background:
+    linear-gradient(rgba(12, 12, 12, 0.45), rgba(12, 12, 12, 0.45)),
+    repeating-linear-gradient(
+      0deg,
+      #6b3b2f 0px,
+      #6b3b2f 22px,
+      #8f6e63 22px,
+      #8f6e63 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 46px,
+      #8f6e63 46px,
+      #8f6e63 48px
+    );
+  opacity: 0.36;
 }
 
 body[data-theme='dark'] .graffiti-title::before {
