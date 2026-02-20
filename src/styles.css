@@ -254,9 +254,12 @@ body[data-theme='dark']::before {
 }
 
 .theme-toggle {
-  min-height: 34px;
-  min-width: 58px;
-  padding: 4px 6px;
+  min-height: auto;
+  min-width: auto;
+  padding: 0;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 .theme-toggle-track {
@@ -295,6 +298,12 @@ body[data-theme='dark']::before {
 
 .theme-toggle:hover .theme-toggle-track {
   border-color: color-mix(in srgb, var(--blue) 65%, var(--border));
+}
+
+.theme-toggle:hover,
+.theme-toggle:active {
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 .user-chip {
