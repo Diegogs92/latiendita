@@ -1,4 +1,6 @@
 /* ── Tokens ────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap');
+
 :root {
   --font: 'Inter', -apple-system, 'Segoe UI', sans-serif;
   --bg: #f0f0f3;
@@ -129,6 +131,27 @@ body[data-theme='dark']::before {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.graffiti-title {
+  font-family: 'Permanent Marker', 'Segoe UI', sans-serif;
+  font-size: clamp(1.45rem, 4.5vw, 2.05rem);
+  letter-spacing: 0.02em;
+  transform: rotate(-1.2deg);
+  color: #1a1a1a;
+  background: none;
+  -webkit-text-fill-color: unset;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 8px rgba(0, 0, 0, 0.08),
+    2px 2px 0 rgba(36, 209, 100, 0.35);
+}
+
+body[data-theme='dark'] .graffiti-title {
+  color: #f2f2f2;
+  text-shadow:
+    0 0 10px rgba(255, 255, 255, 0.08),
+    2px 2px 0 rgba(36, 209, 100, 0.45);
 }
 
 /* ── AuthBar ──────────────────────────────────────────── */
