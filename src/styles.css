@@ -1415,3 +1415,27 @@ textarea { min-height: 64px; resize: vertical; }
   flex-wrap: wrap;
   padding-bottom: 2px;
 }
+
+.admin-entry-button {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 220;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text-3);
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  opacity: 0.65;
+  cursor: pointer;
+}
+
+.admin-entry-button:hover {
+  opacity: 1;
+  color: var(--text-2);
+}

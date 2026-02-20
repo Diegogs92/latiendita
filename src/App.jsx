@@ -75,6 +75,14 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (!supabase || !user) return;
+    const email = (user.email || '').toLowerCase();
+    if (email && email !== ADMIN_EMAIL) {
+      supabase.auth.signOut().catch(() => {});
+    }
+  }, [user]);
+
+  useEffect(() => {
     document.body.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
@@ -92,16 +100,11 @@ function App() {
     });
   }, []);
 
-  const showAdminLogin = useMemo(() => {
-    if (typeof window === 'undefined') return false;
-    const params = new URLSearchParams(window.location.search);
-    return params.get('admin') === '1';
-  }, []);
   const isAdmin = useMemo(() => {
     const email = (user?.email || '').toLowerCase();
     return Boolean(email) && email === ADMIN_EMAIL;
   }, [user]);
-  const canUseAdminFeatures = isAdmin && showAdminLogin;
+  const canUseAdminFeatures = isAdmin;
   const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'Usuario';
   const userPhoto = user?.user_metadata?.avatar_url || '';
@@ -258,9 +261,7 @@ function App() {
 
         <AuthBar
           user={uiUser}
-          isAdmin={actingAsAdmin}
-          showLogin={showAdminLogin}
-          onLogin={handleLogin}
+          isAdmin={canUseAdminFeatures}
           onLogout={handleLogout}
           theme={theme}
           onToggleTheme={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
@@ -349,6 +350,12 @@ function App() {
           )}
         </section>
       </main>
+
+      {!isAdmin && (
+        <button type="button" className="admin-entry-button" onClick={handleLogin} aria-label="Acceso administrador">
+          Admin
+        </button>
+      )}
     </div>
   );
 }
