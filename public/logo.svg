@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="64" y1="32" x2="448" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22C55E"/>
+      <stop offset="1" stop-color="#16A34A"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="104" y1="128" x2="408" y2="232" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111827"/>
+      <stop offset="1" stop-color="#1F2937"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="url(#bg)"/>
+  <rect x="64" y="64" width="384" height="384" rx="88" fill="rgba(255,255,255,0.12)"/>
+
+  <path d="M96 216L256 108L416 216V240H96V216Z" fill="url(#roof)"/>
+  <rect x="128" y="240" width="256" height="168" rx="24" fill="#111827"/>
+  <rect x="168" y="272" width="176" height="96" rx="16" fill="#F9FAFB"/>
+  <path d="M208 316C208 296.118 224.118 280 244 280H300V352H244C224.118 352 208 335.882 208 316Z" fill="#16A34A"/>
+  <path d="M244 304H292V328H244C237.373 328 232 322.627 232 316C232 309.373 237.373 304 244 304Z" fill="#DCFCE7"/>
+</svg>

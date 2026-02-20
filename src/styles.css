@@ -182,6 +182,20 @@ body[data-theme='dark']::before {
   background-clip: text;
 }
 
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(22, 163, 74, 0.24);
+  flex-shrink: 0;
+}
+
 .friendly-title {
   font-family: 'Nunito', 'Inter', 'Segoe UI', sans-serif;
   font-size: clamp(1.5rem, 4.2vw, 2rem);
@@ -190,6 +204,14 @@ body[data-theme='dark']::before {
   color: var(--text);
   background: none;
   -webkit-text-fill-color: unset;
+}
+
+@media (max-width: 560px) {
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
 }
 
 /* ── AuthBar ──────────────────────────────────────────── */

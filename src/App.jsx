@@ -257,7 +257,10 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <h1 className="friendly-title">La tiendita de Diego</h1>
+        <div className="brand">
+          <img className="brand-logo" src="/logo.svg" alt="Logo La tiendita de Diego" />
+          <h1 className="friendly-title">La tiendita de Diego</h1>
+        </div>
 
         <AuthBar
           user={uiUser}
