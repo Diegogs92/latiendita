@@ -28,6 +28,7 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
   const arsPrice = Number(product.precioArs) || 0;
   const usdPrice = Number(product.precioUsd) || 0;
   const hasDualPrice = arsPrice > 0 && usdPrice > 0;
+  const isUnavailable = product.estado === 'Vendido' || product.estado === 'Proximamente';
 
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
@@ -175,7 +176,8 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
           ) : null}
 
           {/* Price block */}
-          <div className={`modal-price-block price-block${hasDualPrice ? ' dual' : ''}`}>
+          {!isUnavailable && (
+            <div className={`modal-price-block price-block${hasDualPrice ? ' dual' : ''}`}>
             {arsPrice > 0 && (
               <div className="price-group">
                 <p className="price">$ {arsPrice.toLocaleString('es-AR')}</p>
@@ -206,7 +208,8 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
                 })()}
               </div>
             )}
-          </div>
+            </div>
+          )}
 
           {/* Actions */}
           {isAdmin ? (
@@ -215,14 +218,14 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
               <button type="button" className="button secondary" onClick={() => { onMarkUnavailable(product.id); onClose(); }}>No disponible</button>
               <button type="button" className="button danger" onClick={() => { onDelete(product.id); onClose(); }}>Eliminar</button>
             </div>
-          ) : (
+          ) : !isUnavailable ? (
             <div className="modal-cta">
               <a className="button wa-offer-button" href={whatsappHref} target="_blank" rel="noreferrer">
                 <span className="wa-offer-label">Ofertar por WhatsApp</span>
               </a>
               <p className="offer-helper">Respuesta directa de Diego</p>
             </div>
-          )}
+          ) : null}
 
         </div>
       </div>
