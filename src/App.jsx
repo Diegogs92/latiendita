@@ -97,7 +97,8 @@ function App() {
     return Boolean(email) && email === ADMIN_EMAIL;
   }, [user]);
 
-  const actingAsAdmin = isAdmin && viewMode === 'developer';
+  const canUseAdminFeatures = isAdmin && showAdminLogin;
+  const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
   const showAdminLogin = useMemo(() => {
     if (typeof window === 'undefined') return false;
     const params = new URLSearchParams(window.location.search);
@@ -280,7 +281,7 @@ function App() {
         </section>
       )}
 
-      {isAdmin && (
+      {canUseAdminFeatures && (
         <section className="card view-switch">
           <p>Vista activa</p>
           <div className="view-switch-actions">
