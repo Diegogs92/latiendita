@@ -1,8 +1,18 @@
 function AuthBar({ user, isAdmin, onLogout, theme, onToggleTheme }) {
   return (
     <div className="authbar">
-      <button type="button" className="button secondary" onClick={onToggleTheme} aria-label="Cambiar tema">
-        {theme === 'light' ? '\u263E' : '\u2600'}
+      <button
+        type="button"
+        className="button secondary theme-toggle"
+        onClick={onToggleTheme}
+        aria-label={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
+        title={`Cambiar a modo ${theme === 'light' ? 'oscuro' : 'claro'}`}
+      >
+        <span className="theme-toggle-track" aria-hidden="true">
+          <span className={`theme-toggle-thumb ${theme === 'dark' ? 'dark' : 'light'}`}>
+            {theme === 'light' ? '\u263e' : '\u2600'}
+          </span>
+        </span>
       </button>
 
       {user && isAdmin ? (
