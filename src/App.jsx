@@ -257,7 +257,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <h1 className="graffiti-title" data-text="La tienda de dieguito">La tienda de dieguito</h1>
+        <h1 className="friendly-title">La tiendita de Diego</h1>
 
         <AuthBar
           user={uiUser}
