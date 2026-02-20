@@ -98,6 +98,11 @@ function App() {
   }, [user]);
 
   const actingAsAdmin = isAdmin && viewMode === 'developer';
+  const showAdminLogin = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    const params = new URLSearchParams(window.location.search);
+    return params.get('admin') === '1';
+  }, []);
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'Usuario';
   const userPhoto = user?.user_metadata?.avatar_url || '';
 
@@ -254,6 +259,7 @@ function App() {
         <AuthBar
           user={uiUser}
           isAdmin={actingAsAdmin}
+          showLogin={showAdminLogin}
           onLogin={handleLogin}
           onLogout={handleLogout}
           theme={theme}
