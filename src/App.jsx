@@ -92,18 +92,17 @@ function App() {
     });
   }, []);
 
-  const isAdmin = useMemo(() => {
-    const email = (user?.email || '').toLowerCase();
-    return Boolean(email) && email === ADMIN_EMAIL;
-  }, [user]);
-
-  const canUseAdminFeatures = isAdmin && showAdminLogin;
-  const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
   const showAdminLogin = useMemo(() => {
     if (typeof window === 'undefined') return false;
     const params = new URLSearchParams(window.location.search);
     return params.get('admin') === '1';
   }, []);
+  const isAdmin = useMemo(() => {
+    const email = (user?.email || '').toLowerCase();
+    return Boolean(email) && email === ADMIN_EMAIL;
+  }, [user]);
+  const canUseAdminFeatures = isAdmin && showAdminLogin;
+  const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'Usuario';
   const userPhoto = user?.user_metadata?.avatar_url || '';
 
