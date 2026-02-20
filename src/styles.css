@@ -18,6 +18,10 @@
   --red-bg: rgba(229, 72, 77, 0.07);
   --blue: #3b82f6;
   --blue-bg: rgba(59, 130, 246, 0.08);
+  --media-bg-start: #f7f8fb;
+  --media-bg-end: #eff1f5;
+  --media-glare: rgba(255, 255, 255, 0.75);
+  --usage-bg: #f0f2f5;
   --r: 18px;
   --r-sm: 12px;
   --r-xs: 8px;
@@ -40,6 +44,10 @@ body[data-theme='dark'] {
   --red-bg: rgba(255, 99, 105, 0.1);
   --blue: #6ea8fe;
   --blue-bg: rgba(110, 168, 254, 0.1);
+  --media-bg-start: #25282f;
+  --media-bg-end: #1b1e24;
+  --media-glare: rgba(255, 255, 255, 0.08);
+  --usage-bg: #262a31;
 }
 
 /* ── Reset ────────────────────────────────────────────── */
@@ -98,6 +106,10 @@ body::before {
 
 body[data-theme='dark']::before {
   opacity: 0.35;
+  background:
+    radial-gradient(ellipse 50% 50% at 20% 30%, rgba(99, 102, 241, 0.12), transparent 70%),
+    radial-gradient(ellipse 40% 60% at 75% 20%, rgba(30, 64, 175, 0.12), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 55% 80%, rgba(6, 95, 70, 0.1), transparent 70%);
 }
 
 @keyframes meshMove {
@@ -696,7 +708,7 @@ textarea { min-height: 64px; resize: vertical; }
 .card-thumb {
   position: relative;
   aspect-ratio: 1 / 1;
-  background: linear-gradient(180deg, #f7f8fb 0%, #eff1f5 100%);
+  background: linear-gradient(180deg, var(--media-bg-start) 0%, var(--media-bg-end) 100%);
   overflow: hidden;
 }
 
@@ -881,8 +893,8 @@ textarea { min-height: 64px; resize: vertical; }
 .carousel {
   position: relative;
   background:
-    radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.75), transparent 45%),
-    linear-gradient(180deg, #f7f8fb 0%, #eff1f5 100%);
+    radial-gradient(circle at 10% 10%, var(--media-glare), transparent 45%),
+    linear-gradient(180deg, var(--media-bg-start) 0%, var(--media-bg-end) 100%);
   aspect-ratio: 4 / 3;
   overflow: hidden;
   padding: 20px 16px 14px;
@@ -1070,7 +1082,7 @@ textarea { min-height: 64px; resize: vertical; }
 }
 
 .badge.usage {
-  background: var(--surface-2, #f0f2f5);
+  background: var(--usage-bg);
   color: var(--text-2);
 }
 
@@ -1392,8 +1404,8 @@ textarea { min-height: 64px; resize: vertical; }
   width: 100%;
   height: 200px;
   background:
-    radial-gradient(circle at 15% 15%, rgba(255,255,255,0.8), transparent 50%),
-    linear-gradient(180deg, #f7f8fb 0%, #eff1f5 100%);
+    radial-gradient(circle at 15% 15%, var(--media-glare), transparent 50%),
+    linear-gradient(180deg, var(--media-bg-start) 0%, var(--media-bg-end) 100%);
   overflow: hidden;
 }
 
