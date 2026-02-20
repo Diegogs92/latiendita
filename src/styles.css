@@ -138,6 +138,8 @@ body[data-theme='dark']::before {
   font-size: clamp(1.45rem, 4.5vw, 2.05rem);
   letter-spacing: 0.02em;
   transform: rotate(-1.2deg);
+  position: relative;
+  display: inline-block;
   color: #1a1a1a;
   background: none;
   -webkit-text-fill-color: unset;
@@ -145,6 +147,29 @@ body[data-theme='dark']::before {
     0 1px 0 rgba(255, 255, 255, 0.35),
     0 0 8px rgba(0, 0, 0, 0.08),
     2px 2px 0 rgba(36, 209, 100, 0.35);
+  animation: graffitiFloat 5.5s ease-in-out infinite;
+}
+
+.graffiti-title::before,
+.graffiti-title::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.graffiti-title::before {
+  color: transparent;
+  -webkit-text-stroke: 1.2px rgba(19, 27, 33, 0.28);
+  transform: translate(1px, 1px);
+  opacity: 0.7;
+}
+
+.graffiti-title::after {
+  color: rgba(36, 209, 100, 0.28);
+  filter: blur(2.2px);
+  transform: translate(2px, 2px);
+  animation: sprayPulse 3.8s ease-in-out infinite;
 }
 
 body[data-theme='dark'] .graffiti-title {
@@ -152,6 +177,41 @@ body[data-theme='dark'] .graffiti-title {
   text-shadow:
     0 0 10px rgba(255, 255, 255, 0.08),
     2px 2px 0 rgba(36, 209, 100, 0.45);
+}
+
+body[data-theme='dark'] .graffiti-title::before {
+  -webkit-text-stroke: 1.2px rgba(230, 239, 245, 0.2);
+}
+
+body[data-theme='dark'] .graffiti-title::after {
+  color: rgba(36, 209, 100, 0.4);
+}
+
+@keyframes graffitiFloat {
+  0% {
+    transform: rotate(-1.2deg) translate(0, 0);
+  }
+  50% {
+    transform: rotate(-0.8deg) translate(0, -1px);
+  }
+  100% {
+    transform: rotate(-1.2deg) translate(0, 0);
+  }
+}
+
+@keyframes sprayPulse {
+  0% {
+    opacity: 0.35;
+    filter: blur(1.8px);
+  }
+  50% {
+    opacity: 0.55;
+    filter: blur(2.8px);
+  }
+  100% {
+    opacity: 0.35;
+    filter: blur(1.8px);
+  }
 }
 
 /* ── AuthBar ──────────────────────────────────────────── */
