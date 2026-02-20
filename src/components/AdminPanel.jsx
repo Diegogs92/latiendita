@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isIsoDate } from '../utils/usageTime';
 
 const CUOTAS_OPTIONS = [3, 6, 12, 18, 24];
 
@@ -91,6 +92,7 @@ function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
   const [form, setForm] = useState(initialForm);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+  const todayIso = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     if (!editingProduct) {
@@ -102,7 +104,7 @@ function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
       productId: editingProduct.id,
       title: editingProduct.title,
       description: editingProduct.description,
-      tiempoUso: editingProduct.tiempoUso || '',
+      tiempoUso: isIsoDate(editingProduct.tiempoUso) ? editingProduct.tiempoUso : '',
       precioArs: editingProduct.precioArs ? Number(editingProduct.precioArs).toLocaleString('es-AR') : '',
       precioUsd: editingProduct.precioUsd ? Number(editingProduct.precioUsd).toLocaleString('es-AR') : '',
       cuotasArs: editingProduct.cuotasArs || 1,
@@ -176,12 +178,15 @@ function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
           onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
           rows={3}
         />
-        <input
-          type="text"
-          placeholder="Tiempo de uso (ej: 6 meses, 1 año, Nuevo)"
-          value={form.tiempoUso}
-          onChange={(e) => setForm((prev) => ({ ...prev, tiempoUso: e.target.value }))}
-        />
+        <label className="file-upload-label">
+          Primer uso
+          <input
+            type="date"
+            max={todayIso}
+            value={form.tiempoUso}
+            onChange={(e) => setForm((prev) => ({ ...prev, tiempoUso: e.target.value }))}
+          />
+        </label>
 
         <div className="price-currency-group">
           <div className="input-with-prefix">
@@ -291,3 +296,4 @@ function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
 }
 
 export default AdminPanel;
+

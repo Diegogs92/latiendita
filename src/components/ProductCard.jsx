@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import ProductModal from './ProductModal';
+import { formatUsageDuration } from '../utils/usageTime';
 
 function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) {
   const [showModal, setShowModal] = useState(false);
@@ -15,6 +16,7 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) 
   const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
   const financingLines = [];
+  const usageLabel = formatUsageDuration(product.tiempoUso);
   if (arsPrice > 0 && product.cuotasArs > 1) {
     const interes = product.interesArs || 0;
     const cuota = Math.round(arsPrice * (1 + interes / 100) / product.cuotasArs);
@@ -44,9 +46,9 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) 
 
         <div className="card-info">
           <p className="card-title">{product.title}</p>
-          {product.tiempoUso && (
+          {usageLabel && (
             <p className="card-usage">
-              <span className="card-usage-label">Tiempo de uso:</span> {product.tiempoUso}
+              <span className="card-usage-label">Tiempo de uso:</span> {usageLabel}
             </p>
           )}
           {!isUnavailable && (

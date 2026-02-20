@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { formatUsageDuration } from '../utils/usageTime';
 
 function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -29,6 +30,7 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
   const usdPrice = Number(product.precioUsd) || 0;
   const hasDualPrice = arsPrice > 0 && usdPrice > 0;
   const isUnavailable = product.estado === 'Vendido' || product.estado === 'Proximamente';
+  const usageLabel = formatUsageDuration(product.tiempoUso);
 
   useEffect(() => {
     const handler = (e) => { if (e.key === 'Escape') onClose(); };
@@ -145,8 +147,8 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
               }`}>
                 {product.estado === 'Proximamente' ? 'Próximamente' : product.estado}
               </span>
-              {product.tiempoUso && (
-                <span className="badge usage">Tiempo de uso: {product.tiempoUso}</span>
+              {usageLabel && (
+                <span className="badge usage">Tiempo de uso: {usageLabel}</span>
               )}
             </div>
           </div>
