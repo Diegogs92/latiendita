@@ -563,15 +563,6 @@ select:focus-visible {
   background: rgba(66, 43, 29, 0.22);
 }
 
-.sticker-title {
-  font-size: 0.72rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 700;
-  color: #7a4e2a;
-  margin-left: 12px;
-}
-
 .ribbon-text {
   font-size: 0.95rem;
   font-weight: 800;
@@ -593,14 +584,6 @@ select:focus-visible {
   background: rgba(166, 92, 31, 0.38);
 }
 
-.ribbon-banner.tone-success .sticker-title {
-  color: #217a4c;
-}
-
-.ribbon-banner.tone-warning .sticker-title {
-  color: #a65c1f;
-}
-
 body[data-theme='dark'] .ribbon-banner {
   background: #2b211a;
   border-color: rgba(228, 190, 154, 0.3);
@@ -613,10 +596,6 @@ body[data-theme='dark'] .ribbon-banner::before {
 
 body[data-theme='dark'] .ribbon-text {
   color: #f0dcc4;
-}
-
-body[data-theme='dark'] .sticker-title {
-  color: #d7b48f;
 }
 
 @keyframes stickerPop {
