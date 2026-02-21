@@ -371,7 +371,10 @@ function App() {
         <section className="ribbon-stack" aria-label="Carteles destacados">
           {visibleBanners.map((banner) => (
             <article key={banner.id} className={`ribbon-banner tone-${banner.tone}`}>
-              <p>{banner.message}</p>
+              <span className="ribbon-icon" aria-hidden="true">
+                {banner.tone === 'success' ? '★' : banner.tone === 'warning' ? '!' : 'i'}
+              </span>
+              <p className="ribbon-text">{banner.message}</p>
             </article>
           ))}
         </section>
