@@ -19,6 +19,7 @@ function App() {
   const [viewMode, setViewMode] = useState(localStorage.getItem('view-mode') || 'developer');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
   const [selectedSubcategoryFilter, setSelectedSubcategoryFilter] = useState('');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState('');
 
   const loadMarketplaceData = async () => {
     if (!supabase) {
@@ -429,9 +430,10 @@ function App() {
       products.filter(
         (item) =>
           (!selectedCategoryFilter || item.categoryId === selectedCategoryFilter) &&
-          (!selectedSubcategoryFilter || item.subcategoryId === selectedSubcategoryFilter)
+          (!selectedSubcategoryFilter || item.subcategoryId === selectedSubcategoryFilter) &&
+          (!selectedStatusFilter || item.estado === selectedStatusFilter)
       ),
-    [products, selectedCategoryFilter, selectedSubcategoryFilter]
+    [products, selectedCategoryFilter, selectedSubcategoryFilter, selectedStatusFilter]
   );
 
   return (
@@ -560,6 +562,15 @@ function App() {
                       {item.name}
                     </option>
                   ))}
+              </select>
+              <select
+                value={selectedStatusFilter}
+                onChange={(e) => setSelectedStatusFilter(e.target.value)}
+              >
+                <option value="">Todos los estados</option>
+                <option value="Disponible">Disponible</option>
+                <option value="Proximamente">Próximamente</option>
+                <option value="Vendido">Vendido</option>
               </select>
             </section>
           )}
