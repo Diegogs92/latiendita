@@ -9,6 +9,7 @@ const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase(
 function App() {
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
+  const [banners, setBanners] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productsError, setProductsError] = useState('');
@@ -18,6 +19,7 @@ function App() {
   const loadMarketplaceData = async () => {
     if (!supabase) {
       setProducts([]);
+      setBanners([]);
       setLoadingProducts(false);
       return;
     }
@@ -50,7 +52,28 @@ function App() {
       compradorId: item.comprador_id
     }));
 
+    const bannersRes = await supabase
+      .from('announcements')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (
+      bannersRes.error &&
+      !String(bannersRes.error.message || '').includes('relation "public.announcements" does not exist')
+    ) {
+      throw new Error(bannersRes.error.message || 'No se pudieron cargar los carteles.');
+    }
+
+    const nextBanners = (bannersRes.data || []).map((item) => ({
+      id: item.id,
+      message: item.message || '',
+      tone: item.tone || 'info',
+      active: Boolean(item.active),
+      createdAt: item.created_at || ''
+    }));
+
     setProducts(nextProducts);
+    setBanners(nextBanners);
     setProductsError('');
     setLoadingProducts(false);
   };
@@ -218,6 +241,37 @@ function App() {
     await loadMarketplaceData();
   };
 
+  const createBanner = async ({ message, tone }) => {
+    if (!supabase || !user) return;
+    const { error } = await supabase.from('announcements').insert([
+      {
+        message: message.trim(),
+        tone,
+        active: true,
+        created_by: user.id
+      }
+    ]);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
+  const toggleBanner = async (bannerId, active) => {
+    if (!supabase || !user) return;
+    const { error } = await supabase
+      .from('announcements')
+      .update({ active })
+      .eq('id', bannerId);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
+  const deleteBanner = async (bannerId) => {
+    if (!supabase || !user) return;
+    const { error } = await supabase.from('announcements').delete().eq('id', bannerId);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
   const markProductUnavailable = async (productId) => {
     if (!supabase) return;
     const { error } = await supabase
@@ -253,6 +307,10 @@ function App() {
       sold: soldCount,
     };
   }, [products]);
+  const visibleBanners = useMemo(
+    () => banners.filter((item) => item.active),
+    [banners]
+  );
 
   return (
     <div className="app-shell">
@@ -309,6 +367,16 @@ function App() {
         </section>
       )}
 
+      {!actingAsAdmin && visibleBanners.length > 0 && (
+        <section className="ribbon-stack" aria-label="Carteles destacados">
+          {visibleBanners.map((banner) => (
+            <article key={banner.id} className={`ribbon-banner tone-${banner.tone}`}>
+              <p>{banner.message}</p>
+            </article>
+          ))}
+        </section>
+      )}
+
       <main className="content">
         {supabaseConfigError && (
           <section className="card status-block">
@@ -322,6 +390,10 @@ function App() {
             editingProduct={editingProduct}
             onSave={createOrUpdateProduct}
             onCancelEdit={() => setEditingProduct(null)}
+            banners={banners}
+            onCreateBanner={createBanner}
+            onToggleBanner={toggleBanner}
+            onDeleteBanner={deleteBanner}
           />
         )}
 

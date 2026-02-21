@@ -57,13 +57,24 @@ create table if not exists public.offers (
   aceptada boolean not null default false
 );
 
+create table if not exists public.announcements (
+  id uuid primary key default gen_random_uuid(),
+  message text not null check (length(trim(message)) > 0 and length(message) <= 140),
+  tone text not null default 'info' check (tone in ('info', 'success', 'warning')),
+  active boolean not null default true,
+  created_by uuid not null references auth.users(id) on delete restrict,
+  created_at timestamptz not null default now()
+);
+
 create index if not exists products_fecha_creacion_idx on public.products (fecha_creacion desc);
 create index if not exists comments_product_fecha_idx on public.comments (product_id, fecha desc);
 create index if not exists offers_product_fecha_idx on public.offers (product_id, fecha desc);
+create index if not exists announcements_created_at_idx on public.announcements (created_at desc);
 
 alter table public.products enable row level security;
 alter table public.comments enable row level security;
 alter table public.offers enable row level security;
+alter table public.announcements enable row level security;
 
 drop policy if exists products_select_all on public.products;
 create policy products_select_all on public.products for select using (true);
@@ -99,6 +110,25 @@ drop policy if exists offers_insert_authenticated on public.offers;
 create policy offers_insert_authenticated on public.offers
 for insert to authenticated
 with check (auth.uid() = user_id and aceptada = false);
+
+drop policy if exists announcements_select_all on public.announcements;
+create policy announcements_select_all on public.announcements for select using (true);
+
+drop policy if exists announcements_insert_admin on public.announcements;
+create policy announcements_insert_admin on public.announcements
+for insert to authenticated
+with check (public.is_admin());
+
+drop policy if exists announcements_update_admin on public.announcements;
+create policy announcements_update_admin on public.announcements
+for update to authenticated
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists announcements_delete_admin on public.announcements;
+create policy announcements_delete_admin on public.announcements
+for delete to authenticated
+using (public.is_admin());
 
 create or replace function public.buy_product(p_product_id uuid)
 returns void

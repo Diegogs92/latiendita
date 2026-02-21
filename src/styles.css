@@ -517,6 +517,49 @@ select:focus-visible {
   gap: 10px;
 }
 
+.ribbon-stack {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.ribbon-banner {
+  position: relative;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.ribbon-banner::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--blue);
+}
+
+.ribbon-banner p {
+  margin-left: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.tone-info::before {
+  background: var(--blue);
+}
+
+.tone-success::before {
+  background: var(--green);
+}
+
+.tone-warning::before {
+  background: #f59e0b;
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -556,6 +599,32 @@ select:focus-visible {
 .admin-panel {
   display: grid;
   gap: 8px;
+}
+
+.banner-admin {
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.banner-admin-list {
+  display: grid;
+  gap: 8px;
+}
+
+.banner-admin-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-alt);
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.banner-admin-item p {
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .admin-form, .inline-form {

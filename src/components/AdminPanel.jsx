@@ -88,11 +88,23 @@ function CuotasBlock({ label, symbol, basePrice, cuotas, interes, onChangeCuotas
   );
 }
 
-function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
+function AdminPanel({
+  editingProduct,
+  onSave,
+  onCancelEdit,
+  banners = [],
+  onCreateBanner,
+  onToggleBanner,
+  onDeleteBanner
+}) {
   const [form, setForm] = useState(initialForm);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const todayIso = new Date().toISOString().slice(0, 10);
+  const [bannerMessage, setBannerMessage] = useState('');
+  const [bannerTone, setBannerTone] = useState('info');
+  const [bannerSaving, setBannerSaving] = useState(false);
+  const [bannerError, setBannerError] = useState('');
 
   useEffect(() => {
     if (!editingProduct) {
@@ -151,6 +163,28 @@ function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
 
   const basePriceArs = parseFormattedNumber(form.precioArs);
   const basePriceUsd = parseFormattedNumber(form.precioUsd);
+  const sortedBanners = [...banners].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+
+  const handleCreateBanner = async (event) => {
+    event.preventDefault();
+    const message = bannerMessage.trim();
+    if (!message) {
+      setBannerError('Escribe un cartel para publicarlo.');
+      return;
+    }
+
+    setBannerSaving(true);
+    setBannerError('');
+    try {
+      await onCreateBanner?.({ message, tone: bannerTone });
+      setBannerMessage('');
+      setBannerTone('info');
+    } catch (error) {
+      setBannerError(error?.message || 'No se pudo crear el cartel.');
+    } finally {
+      setBannerSaving(false);
+    }
+  };
 
   return (
     <section className="admin-panel card" id="admin-editor">
@@ -291,6 +325,62 @@ function AdminPanel({ editingProduct, onSave, onCancelEdit }) {
         </button>
         {saveError && <p className="status-text error-text">{saveError}</p>}
       </form>
+
+      <section className="banner-admin">
+        <div className="section-head">
+          <h2>Carteles</h2>
+          <p>{sortedBanners.length} total</p>
+        </div>
+
+        <form className="inline-form" onSubmit={handleCreateBanner}>
+          <input
+            type="text"
+            placeholder="Texto del cartel para clientes"
+            value={bannerMessage}
+            onChange={(e) => setBannerMessage(e.target.value)}
+            maxLength={140}
+          />
+          <div className="form-row">
+            <select value={bannerTone} onChange={(e) => setBannerTone(e.target.value)}>
+              <option value="info">Informativo</option>
+              <option value="success">Promo</option>
+              <option value="warning">Urgente</option>
+            </select>
+            <button type="submit" className="button" disabled={bannerSaving}>
+              {bannerSaving ? 'Publicando...' : 'Publicar cartel'}
+            </button>
+          </div>
+          {bannerError && <p className="status-text error-text">{bannerError}</p>}
+        </form>
+
+        <div className="banner-admin-list">
+          {sortedBanners.length === 0 ? (
+            <p className="status-text">No hay carteles cargados.</p>
+          ) : (
+            sortedBanners.map((banner) => (
+              <article key={banner.id} className={`banner-admin-item tone-${banner.tone}`}>
+                <p>{banner.message}</p>
+                <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => onToggleBanner?.(banner.id, !banner.active)}
+                  >
+                    {banner.active ? 'Ocultar' : 'Mostrar'}
+                  </button>
+                  <button
+                    type="button"
+                    className="button danger"
+                    onClick={() => onDeleteBanner?.(banner.id)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+      </section>
     </section>
   );
 }
