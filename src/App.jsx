@@ -19,7 +19,7 @@ function App() {
   const [viewMode, setViewMode] = useState(localStorage.getItem('view-mode') || 'developer');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
   const [selectedSubcategoryFilter, setSelectedSubcategoryFilter] = useState('');
-  const [selectedStatusFilter, setSelectedStatusFilter] = useState('');
+  const [selectedStatusFilter, setSelectedStatusFilter] = useState('Disponible');
 
   const loadMarketplaceData = async () => {
     if (!supabase) {
