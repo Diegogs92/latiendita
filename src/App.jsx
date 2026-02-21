@@ -169,6 +169,15 @@ function App() {
     localStorage.setItem('view-mode', viewMode);
   }, [viewMode]);
 
+  const isAdmin = useMemo(() => {
+    const email = (user?.email || '').toLowerCase();
+    return Boolean(email) && email === ADMIN_EMAIL;
+  }, [user]);
+  const canUseAdminFeatures = isAdmin;
+  const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
+  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'Usuario';
+  const userPhoto = user?.user_metadata?.avatar_url || '';
+
   useEffect(() => {
     if (actingAsAdmin) {
       setSelectedStatusFilter('');
@@ -185,15 +194,6 @@ function App() {
       setLoadingProducts(false);
     });
   }, []);
-
-  const isAdmin = useMemo(() => {
-    const email = (user?.email || '').toLowerCase();
-    return Boolean(email) && email === ADMIN_EMAIL;
-  }, [user]);
-  const canUseAdminFeatures = isAdmin;
-  const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
-  const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'Usuario';
-  const userPhoto = user?.user_metadata?.avatar_url || '';
 
   const handleLogin = async () => {
     if (!supabase) return;
