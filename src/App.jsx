@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import AuthBar from './components/AuthBar';
 import AdminPanel from './components/AdminPanel';
+import BannerPublisherModal from './components/BannerPublisherModal';
 import TaxonomyModal from './components/TaxonomyModal';
 import ProductCard from './components/ProductCard';
 import { supabase, supabaseConfigError } from './supabase';
@@ -22,6 +23,7 @@ function App() {
   const [selectedSubcategoryFilter, setSelectedSubcategoryFilter] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('Disponible');
   const [showTaxonomyModal, setShowTaxonomyModal] = useState(false);
+  const [showBannerPublisherModal, setShowBannerPublisherModal] = useState(false);
 
   const loadMarketplaceData = async () => {
     if (!supabase) {
@@ -168,6 +170,14 @@ function App() {
   }, [viewMode]);
 
   useEffect(() => {
+    if (actingAsAdmin) {
+      setSelectedStatusFilter('');
+    } else {
+      setSelectedStatusFilter('Disponible');
+    }
+  }, [actingAsAdmin]);
+
+  useEffect(() => {
     loadMarketplaceData().catch((error) => {
       console.error('Load marketplace error:', error);
       setProducts([]);
@@ -199,6 +209,7 @@ function App() {
   const handleLogout = async () => {
     if (!supabase) return;
     setShowTaxonomyModal(false);
+    setShowBannerPublisherModal(false);
     await supabase.auth.signOut();
   };
 
@@ -435,6 +446,14 @@ function App() {
     setShowTaxonomyModal(true);
   };
 
+  const openBannerPublisher = () => {
+    if (!canUseAdminFeatures) return;
+    if (!actingAsAdmin) {
+      setViewMode('developer');
+    }
+    setShowBannerPublisherModal(true);
+  };
+
   const uiUser = user
     ? {
         uid: user.id,
@@ -491,6 +510,7 @@ function App() {
           user={uiUser}
           isAdmin={canUseAdminFeatures}
           onOpenSettings={openTaxonomySettings}
+          onOpenBannerPublisher={openBannerPublisher}
           onLogout={handleLogout}
           theme={theme}
           onToggleTheme={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
@@ -528,6 +548,7 @@ function App() {
                 setViewMode('client');
                 setEditingProduct(null);
                 setShowTaxonomyModal(false);
+                setShowBannerPublisherModal(false);
               }}
             >
               Cliente
@@ -579,6 +600,11 @@ function App() {
               onUpdateSubcategory={updateSubcategory}
               onDeleteSubcategory={deleteSubcategory}
             />
+            <BannerPublisherModal
+              open={showBannerPublisherModal}
+              onClose={() => setShowBannerPublisherModal(false)}
+              onCreateBanner={createBanner}
+            />
           </>
         )}
 
@@ -588,8 +614,7 @@ function App() {
             <p>{filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''}</p>
           </div>
 
-          {!actingAsAdmin && (
-            <section className="product-filters card">
+          <section className="product-filters card">
               <select
                 value={selectedCategoryFilter}
                 onChange={(e) => {
@@ -627,8 +652,7 @@ function App() {
                 <option value="Proximamente">Próximamente</option>
                 <option value="Vendido">Vendido</option>
               </select>
-            </section>
-          )}
+          </section>
 
           {loadingProducts ? (
             <p className="status-text">Cargando productos...</p>

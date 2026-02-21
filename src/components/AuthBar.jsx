@@ -1,4 +1,4 @@
-function AuthBar({ user, isAdmin, onOpenSettings, onLogout, theme, onToggleTheme }) {
+function AuthBar({ user, isAdmin, onOpenSettings, onOpenBannerPublisher, onLogout, theme, onToggleTheme }) {
   return (
     <div className="authbar">
       <button
@@ -17,6 +17,9 @@ function AuthBar({ user, isAdmin, onOpenSettings, onLogout, theme, onToggleTheme
 
       {user && isAdmin ? (
         <>
+          <button type="button" className="button secondary admin-settings-button" onClick={onOpenBannerPublisher}>
+            Publicar cartel
+          </button>
           <button type="button" className="button secondary admin-settings-button" onClick={onOpenSettings}>
             Configuración
           </button>

@@ -1928,3 +1928,7 @@ textarea { min-height: 64px; resize: vertical; }
 .taxonomy-modal .section-head {
   margin-bottom: 6px;
 }
+
+.banner-publisher-modal {
+  width: min(620px, 100%);
+}
