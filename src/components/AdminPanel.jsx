@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { isIsoDate } from '../utils/usageTime';
 
 const CUOTAS_OPTIONS = [3, 6, 12, 18, 24];
+const DOLAR_TYPE_OPTIONS = [
+  { id: 'oficial', label: 'Oficial' },
+  { id: 'blue', label: 'Blue' },
+  { id: 'bolsa', label: 'MEP (Bolsa)' }
+];
 
 const initialForm = {
   productId: '',
@@ -29,6 +34,12 @@ function formatNumberInput(value) {
 
 function parseFormattedNumber(formatted) {
   return Number(formatted.replace(/\D/g, '')) || 0;
+}
+
+function formatMoneyNumber(value) {
+  const normalized = Number(value) || 0;
+  if (!normalized) return '0';
+  return Math.round(normalized).toLocaleString('es-AR');
 }
 
 function CuotasBlock({ label, symbol, basePrice, cuotas, interes, onChangeCuotas, onChangeInteres }) {
@@ -123,6 +134,10 @@ function AdminPanel({
   const [categoryError, setCategoryError] = useState('');
   const [editingCategoryId, setEditingCategoryId] = useState('');
   const [editingSubcategoryId, setEditingSubcategoryId] = useState('');
+  const [dolarType, setDolarType] = useState('blue');
+  const [dolarData, setDolarData] = useState(null);
+  const [dolarLoading, setDolarLoading] = useState(false);
+  const [dolarError, setDolarError] = useState('');
 
   useEffect(() => {
     if (!editingProduct) {
@@ -163,6 +178,28 @@ function AdminPanel({
     }
   }, [form.categoryId, form.subcategoryId, subcategories]);
 
+  const loadDolarQuote = async (selectedType = dolarType) => {
+    setDolarLoading(true);
+    setDolarError('');
+    try {
+      const response = await fetch(`https://dolarapi.com/v1/dolares/${selectedType}`);
+      if (!response.ok) {
+        throw new Error('No se pudo obtener la cotización actual.');
+      }
+      const data = await response.json();
+      setDolarData(data);
+    } catch (error) {
+      setDolarData(null);
+      setDolarError(error?.message || 'No se pudo obtener la cotización actual.');
+    } finally {
+      setDolarLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDolarQuote(dolarType);
+  }, []);
+
   const resetForm = () => {
     setForm(initialForm);
     onCancelEdit();
@@ -197,6 +234,15 @@ function AdminPanel({
 
   const basePriceArs = parseFormattedNumber(form.precioArs);
   const basePriceUsd = parseFormattedNumber(form.precioUsd);
+  const dolarVenta = Number(dolarData?.venta) || 0;
+  const suggestedUsd = basePriceArs > 0 && dolarVenta > 0 ? Math.max(1, Math.round(basePriceArs / dolarVenta)) : 0;
+  const suggestedArs = basePriceUsd > 0 && dolarVenta > 0 ? Math.max(1, Math.round(basePriceUsd * dolarVenta)) : 0;
+  const dolarUpdatedAt = dolarData?.fechaActualizacion
+    ? new Date(dolarData.fechaActualizacion).toLocaleString('es-AR', {
+        dateStyle: 'short',
+        timeStyle: 'short'
+      })
+    : '';
   const sortedBanners = [...banners].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
   const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
   const sortedSubcategories = [...subcategories].sort((a, b) => a.name.localeCompare(b.name));
@@ -319,6 +365,11 @@ function AdminPanel({
       </div>
 
       <form onSubmit={handleSubmit} className="admin-form compact">
+        <div className="admin-guidance">
+          <p>Carga rápida para admin</p>
+          <small>Completa título, descripción, precios y estado. Puedes usar el asistente ARS/USD debajo.</small>
+        </div>
+
         <input
           required
           type="text"
@@ -376,6 +427,61 @@ function AdminPanel({
         </div>
 
         <div className="price-currency-group">
+          <div className="fx-assistant">
+            <div className="fx-assistant-head">
+              <p>Asistente de cotización</p>
+              <div className="fx-controls">
+                <select
+                  value={dolarType}
+                  onChange={(e) => {
+                    const nextType = e.target.value;
+                    setDolarType(nextType);
+                    loadDolarQuote(nextType);
+                  }}
+                >
+                  {DOLAR_TYPE_OPTIONS.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      Dólar {option.label}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  className="button secondary"
+                  onClick={() => loadDolarQuote(dolarType)}
+                  disabled={dolarLoading}
+                >
+                  {dolarLoading ? 'Actualizando...' : 'Actualizar'}
+                </button>
+              </div>
+            </div>
+            {dolarData && (
+              <p className="fx-rate-line">
+                Venta: ${formatMoneyNumber(dolarData.venta)} · Compra: ${formatMoneyNumber(dolarData.compra)}
+                {dolarUpdatedAt ? ` · ${dolarUpdatedAt}` : ''}
+              </p>
+            )}
+            {dolarError && <p className="status-text error-text">{dolarError}</p>}
+            <div className="fx-suggestions">
+              <button
+                type="button"
+                className="button secondary"
+                disabled={!suggestedUsd}
+                onClick={() => setForm((prev) => ({ ...prev, precioUsd: formatMoneyNumber(suggestedUsd) }))}
+              >
+                Usar sugerencia USD: US$ {formatMoneyNumber(suggestedUsd)}
+              </button>
+              <button
+                type="button"
+                className="button secondary"
+                disabled={!suggestedArs}
+                onClick={() => setForm((prev) => ({ ...prev, precioArs: formatMoneyNumber(suggestedArs) }))}
+              >
+                Usar sugerencia ARS: $ {formatMoneyNumber(suggestedArs)}
+              </button>
+            </div>
+          </div>
+
           <div className="input-with-prefix">
             <span className="currency-prefix">$</span>
             <input

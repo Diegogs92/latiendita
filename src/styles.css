@@ -677,6 +677,26 @@ body[data-theme='dark'] .ribbon-text {
   gap: 6px;
 }
 
+.admin-guidance {
+  display: grid;
+  gap: 3px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-alt) 85%, transparent);
+  border-radius: 12px;
+  padding: 9px 10px;
+}
+
+.admin-guidance p {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.admin-guidance small {
+  font-size: 0.72rem;
+  color: var(--text-2);
+}
+
 .admin-form.compact textarea { min-height: 56px; }
 
 .form-row {
@@ -729,6 +749,63 @@ body[data-theme='dark'] .ribbon-text {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.fx-assistant {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  background: color-mix(in srgb, var(--surface) 78%, var(--blue-bg));
+  display: grid;
+  gap: 6px;
+}
+
+.fx-assistant-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.fx-assistant-head p {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.fx-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fx-controls select {
+  min-height: 30px;
+  font-size: 0.72rem;
+}
+
+.fx-controls .button {
+  min-height: 30px;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+}
+
+.fx-rate-line {
+  font-size: 0.72rem;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.fx-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.fx-suggestions .button {
+  min-height: 30px;
+  font-size: 0.72rem;
+  padding: 4px 10px;
 }
 
 .cuotas-block {
