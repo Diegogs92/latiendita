@@ -371,9 +371,7 @@ function App() {
         <section className="ribbon-stack" aria-label="Carteles destacados">
           {visibleBanners.map((banner) => (
             <article key={banner.id} className={`ribbon-banner tone-${banner.tone}`}>
-              <span className="ribbon-icon" aria-hidden="true">
-                {banner.tone === 'success' ? '★' : banner.tone === 'warning' ? '!' : 'i'}
-              </span>
+              <p className="sticker-title">La tiendita de Diego</p>
               <p className="ribbon-text">{banner.message}</p>
             </article>
           ))}
