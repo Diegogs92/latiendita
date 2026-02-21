@@ -1,6 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import AuthBar from './components/AuthBar';
 import AdminPanel from './components/AdminPanel';
+import TaxonomyModal from './components/TaxonomyModal';
 import ProductCard from './components/ProductCard';
 import { supabase, supabaseConfigError } from './supabase';
 
@@ -20,6 +21,7 @@ function App() {
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
   const [selectedSubcategoryFilter, setSelectedSubcategoryFilter] = useState('');
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('Disponible');
+  const [showTaxonomyModal, setShowTaxonomyModal] = useState(false);
 
   const loadMarketplaceData = async () => {
     if (!supabase) {
@@ -196,6 +198,7 @@ function App() {
 
   const handleLogout = async () => {
     if (!supabase) return;
+    setShowTaxonomyModal(false);
     await supabase.auth.signOut();
   };
 
@@ -426,21 +429,10 @@ function App() {
 
   const openTaxonomySettings = () => {
     if (!canUseAdminFeatures) return;
-
-    const scrollToTaxonomy = () => {
-      const section = document.getElementById('taxonomy-manager');
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    };
-
     if (!actingAsAdmin) {
       setViewMode('developer');
-      setTimeout(scrollToTaxonomy, 60);
-      return;
     }
-
-    scrollToTaxonomy();
+    setShowTaxonomyModal(true);
   };
 
   const uiUser = user
@@ -535,6 +527,7 @@ function App() {
               onClick={() => {
                 setViewMode('client');
                 setEditingProduct(null);
+                setShowTaxonomyModal(false);
               }}
             >
               Cliente
@@ -562,23 +555,31 @@ function App() {
         )}
 
         {actingAsAdmin && (
-          <AdminPanel
-            editingProduct={editingProduct}
-            onSave={createOrUpdateProduct}
-            onCancelEdit={() => setEditingProduct(null)}
-            banners={banners}
-            onCreateBanner={createBanner}
-            onToggleBanner={toggleBanner}
-            onDeleteBanner={deleteBanner}
-            categories={categories}
-            subcategories={subcategories}
-            onCreateCategory={createCategory}
-            onUpdateCategory={updateCategory}
-            onDeleteCategory={deleteCategory}
-            onCreateSubcategory={createSubcategory}
-            onUpdateSubcategory={updateSubcategory}
-            onDeleteSubcategory={deleteSubcategory}
-          />
+          <>
+            <AdminPanel
+              editingProduct={editingProduct}
+              onSave={createOrUpdateProduct}
+              onCancelEdit={() => setEditingProduct(null)}
+              banners={banners}
+              onCreateBanner={createBanner}
+              onToggleBanner={toggleBanner}
+              onDeleteBanner={deleteBanner}
+              categories={categories}
+              subcategories={subcategories}
+            />
+            <TaxonomyModal
+              open={showTaxonomyModal}
+              onClose={() => setShowTaxonomyModal(false)}
+              categories={categories}
+              subcategories={subcategories}
+              onCreateCategory={createCategory}
+              onUpdateCategory={updateCategory}
+              onDeleteCategory={deleteCategory}
+              onCreateSubcategory={createSubcategory}
+              onUpdateSubcategory={updateSubcategory}
+              onDeleteSubcategory={deleteSubcategory}
+            />
+          </>
         )}
 
         <section className="products-section">

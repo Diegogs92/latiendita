@@ -1911,3 +1911,14 @@ textarea { min-height: 64px; resize: vertical; }
   opacity: 1;
   color: var(--text-2);
 }
+
+.taxonomy-modal-backdrop {
+  z-index: 260;
+}
+
+.taxonomy-modal {
+  width: min(980px, 100%);
+  max-height: min(88vh, 760px);
+  overflow: auto;
+  padding: 14px;
+}
