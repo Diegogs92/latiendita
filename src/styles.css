@@ -543,24 +543,11 @@ select:focus-visible {
 }
 
 .ribbon-banner::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 9px;
-  background: #8a5a32;
+  content: none;
 }
 
 .ribbon-banner::after {
-  content: '';
-  position: absolute;
-  right: 10px;
-  top: 8px;
-  width: 7px;
-  height: 7px;
-  border-radius: 999px;
-  background: rgba(66, 43, 29, 0.22);
+  content: none;
 }
 
 .ribbon-text {
@@ -573,25 +560,21 @@ select:focus-visible {
 }
 
 .ribbon-banner.tone-info::after {
-  background: rgba(122, 78, 42, 0.28);
+  background: transparent;
 }
 
 .ribbon-banner.tone-success::after {
-  background: rgba(33, 122, 76, 0.35);
+  background: transparent;
 }
 
 .ribbon-banner.tone-warning::after {
-  background: rgba(166, 92, 31, 0.38);
+  background: transparent;
 }
 
 body[data-theme='dark'] .ribbon-banner {
   background: #2b211a;
   border-color: rgba(228, 190, 154, 0.3);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
-}
-
-body[data-theme='dark'] .ribbon-banner::before {
-  background: #d2a579;
 }
 
 body[data-theme='dark'] .ribbon-text {
