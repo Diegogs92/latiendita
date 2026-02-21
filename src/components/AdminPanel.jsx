@@ -101,8 +101,10 @@ function AdminPanel({
   categories = [],
   subcategories = [],
   onCreateCategory,
+  onUpdateCategory,
   onDeleteCategory,
   onCreateSubcategory,
+  onUpdateSubcategory,
   onDeleteSubcategory
 }) {
   const [form, setForm] = useState(initialForm);
@@ -119,6 +121,8 @@ function AdminPanel({
   const [categorySaving, setCategorySaving] = useState(false);
   const [subCategorySaving, setSubCategorySaving] = useState(false);
   const [categoryError, setCategoryError] = useState('');
+  const [editingCategoryId, setEditingCategoryId] = useState('');
+  const [editingSubcategoryId, setEditingSubcategoryId] = useState('');
 
   useEffect(() => {
     if (!editingProduct) {
@@ -230,8 +234,13 @@ function AdminPanel({
     setCategorySaving(true);
     setCategoryError('');
     try {
-      await onCreateCategory?.(name);
+      if (editingCategoryId) {
+        await onUpdateCategory?.({ id: editingCategoryId, name });
+      } else {
+        await onCreateCategory?.(name);
+      }
       setCategoryName('');
+      setEditingCategoryId('');
     } catch (error) {
       setCategoryError(error?.message || 'No se pudo crear la categoría.');
     } finally {
@@ -254,13 +263,48 @@ function AdminPanel({
     setSubCategorySaving(true);
     setCategoryError('');
     try {
-      await onCreateSubcategory?.({ categoryId: subCategoryParent, name });
+      if (editingSubcategoryId) {
+        await onUpdateSubcategory?.({
+          id: editingSubcategoryId,
+          categoryId: subCategoryParent,
+          name
+        });
+      } else {
+        await onCreateSubcategory?.({ categoryId: subCategoryParent, name });
+      }
       setSubCategoryName('');
+      setEditingSubcategoryId('');
     } catch (error) {
       setCategoryError(error?.message || 'No se pudo crear la subcategoría.');
     } finally {
       setSubCategorySaving(false);
     }
+  };
+
+  const handleStartEditCategory = (category) => {
+    setEditingCategoryId(category.id);
+    setCategoryName(category.name);
+    setCategoryError('');
+  };
+
+  const handleCancelEditCategory = () => {
+    setEditingCategoryId('');
+    setCategoryName('');
+    setCategoryError('');
+  };
+
+  const handleStartEditSubcategory = (subcategory) => {
+    setEditingSubcategoryId(subcategory.id);
+    setSubCategoryName(subcategory.name);
+    setSubCategoryParent(subcategory.categoryId || '');
+    setCategoryError('');
+  };
+
+  const handleCancelEditSubcategory = () => {
+    setEditingSubcategoryId('');
+    setSubCategoryName('');
+    setSubCategoryParent(categories[0]?.id || '');
+    setCategoryError('');
   };
 
   return (
@@ -450,8 +494,13 @@ function AdminPanel({
             maxLength={60}
           />
           <button type="submit" className="button" disabled={categorySaving}>
-            {categorySaving ? 'Creando...' : 'Crear categoría'}
+            {categorySaving ? 'Guardando...' : editingCategoryId ? 'Guardar categoría' : 'Crear categoría'}
           </button>
+          {editingCategoryId && (
+            <button type="button" className="button secondary" onClick={handleCancelEditCategory}>
+              Cancelar
+            </button>
+          )}
         </form>
 
         <form className="inline-form" onSubmit={handleCreateSubcategory}>
@@ -473,8 +522,13 @@ function AdminPanel({
             />
           </div>
           <button type="submit" className="button" disabled={subCategorySaving || sortedCategories.length === 0}>
-            {subCategorySaving ? 'Creando...' : 'Crear subcategoría'}
+            {subCategorySaving ? 'Guardando...' : editingSubcategoryId ? 'Guardar subcategoría' : 'Crear subcategoría'}
           </button>
+          {editingSubcategoryId && (
+            <button type="button" className="button secondary" onClick={handleCancelEditSubcategory}>
+              Cancelar
+            </button>
+          )}
           {categoryError && <p className="status-text error-text">{categoryError}</p>}
         </form>
 
@@ -486,6 +540,13 @@ function AdminPanel({
               <article key={category.id} className="banner-admin-item">
                 <p>{category.name}</p>
                 <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => handleStartEditCategory(category)}
+                  >
+                    Editar
+                  </button>
                   <button
                     type="button"
                     className="button danger"
@@ -510,6 +571,13 @@ function AdminPanel({
                   <small> · {sortedCategories.find((item) => item.id === subcategory.categoryId)?.name || 'Sin categoría'}</small>
                 </p>
                 <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button secondary"
+                    onClick={() => handleStartEditSubcategory(subcategory)}
+                  >
+                    Editar
+                  </button>
                   <button
                     type="button"
                     className="button danger"

@@ -342,6 +342,20 @@ function App() {
     await loadMarketplaceData();
   };
 
+  const updateCategory = async ({ id, name }) => {
+    if (!supabase || !user) return;
+    const normalized = (name || '').trim();
+    if (!id) throw new Error('Categoría inválida.');
+    if (!normalized) throw new Error('Escribe un nombre válido para la categoría.');
+
+    const { error } = await supabase
+      .from('categories')
+      .update({ name: normalized })
+      .eq('id', id);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
   const deleteCategory = async (categoryId) => {
     if (!supabase || !user) return;
     const { error } = await supabase.from('categories').delete().eq('id', categoryId);
@@ -362,6 +376,24 @@ function App() {
         created_by: user.id
       }
     ]);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
+  const updateSubcategory = async ({ id, categoryId, name }) => {
+    if (!supabase || !user) return;
+    const normalized = (name || '').trim();
+    if (!id) throw new Error('Subcategoría inválida.');
+    if (!categoryId) throw new Error('Selecciona una categoría.');
+    if (!normalized) throw new Error('Escribe un nombre válido para la subcategoría.');
+
+    const { error } = await supabase
+      .from('subcategories')
+      .update({
+        category_id: categoryId,
+        name: normalized
+      })
+      .eq('id', id);
     if (error) throw error;
     await loadMarketplaceData();
   };
@@ -521,8 +553,10 @@ function App() {
             categories={categories}
             subcategories={subcategories}
             onCreateCategory={createCategory}
+            onUpdateCategory={updateCategory}
             onDeleteCategory={deleteCategory}
             onCreateSubcategory={createSubcategory}
+            onUpdateSubcategory={updateSubcategory}
             onDeleteSubcategory={deleteSubcategory}
           />
         )}
