@@ -10,16 +10,22 @@ function App() {
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
   const [loadingProducts, setLoadingProducts] = useState(true);
   const [productsError, setProductsError] = useState('');
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [viewMode, setViewMode] = useState(localStorage.getItem('view-mode') || 'developer');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
+  const [selectedSubcategoryFilter, setSelectedSubcategoryFilter] = useState('');
 
   const loadMarketplaceData = async () => {
     if (!supabase) {
       setProducts([]);
       setBanners([]);
+      setCategories([]);
+      setSubcategories([]);
       setLoadingProducts(false);
       return;
     }
@@ -34,11 +40,53 @@ function App() {
       throw new Error(productsRes.error.message || 'No se pudieron cargar datos del marketplace.');
     }
 
+    const categoriesRes = await supabase
+      .from('categories')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (
+      categoriesRes.error &&
+      !String(categoriesRes.error.message || '').includes('relation "public.categories" does not exist')
+    ) {
+      throw new Error(categoriesRes.error.message || 'No se pudieron cargar las categorías.');
+    }
+
+    const subcategoriesRes = await supabase
+      .from('subcategories')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (
+      subcategoriesRes.error &&
+      !String(subcategoriesRes.error.message || '').includes('relation "public.subcategories" does not exist')
+    ) {
+      throw new Error(subcategoriesRes.error.message || 'No se pudieron cargar las subcategorías.');
+    }
+
+    const nextCategories = (categoriesRes.data || []).map((item) => ({
+      id: item.id,
+      name: item.name || '',
+      createdAt: item.created_at || ''
+    }));
+    const nextSubcategories = (subcategoriesRes.data || []).map((item) => ({
+      id: item.id,
+      categoryId: item.category_id || '',
+      name: item.name || '',
+      createdAt: item.created_at || ''
+    }));
+    const categoryById = new Map(nextCategories.map((item) => [item.id, item]));
+    const subcategoryById = new Map(nextSubcategories.map((item) => [item.id, item]));
+
     const nextProducts = (productsRes.data || []).map((item) => ({
       id: item.id,
       title: item.title,
       description: item.description,
       tiempoUso: item.tiempo_uso || '',
+      categoryId: item.categoria_id || '',
+      subcategoryId: item.subcategoria_id || '',
+      categoryName: categoryById.get(item.categoria_id)?.name || '',
+      subcategoryName: subcategoryById.get(item.subcategoria_id)?.name || '',
       precioBase: item.precio_base,
       moneda: item.moneda || 'ARS',
       precioArs: item.precio_ars ?? (item.moneda === 'ARS' ? item.precio_base : null),
@@ -74,6 +122,8 @@ function App() {
 
     setProducts(nextProducts);
     setBanners(nextBanners);
+    setCategories(nextCategories);
+    setSubcategories(nextSubcategories);
     setProductsError('');
     setLoadingProducts(false);
   };
@@ -169,6 +219,8 @@ function App() {
     title,
     description,
     tiempoUso,
+    categoryId,
+    subcategoryId,
     precioArs,
     precioUsd,
     cuotasArs,
@@ -192,6 +244,8 @@ function App() {
         title,
         description,
         tiempo_uso: tiempoUso || null,
+        categoria_id: categoryId || null,
+        subcategoria_id: subcategoryId || null,
         precio_base: precioBase,
         moneda,
         precio_ars: normalizedArs,
@@ -272,6 +326,52 @@ function App() {
     await loadMarketplaceData();
   };
 
+  const createCategory = async (name) => {
+    if (!supabase || !user) return;
+    const normalized = (name || '').trim();
+    if (!normalized) throw new Error('Escribe una categoría válida.');
+
+    const { error } = await supabase.from('categories').insert([
+      {
+        name: normalized,
+        created_by: user.id
+      }
+    ]);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
+  const deleteCategory = async (categoryId) => {
+    if (!supabase || !user) return;
+    const { error } = await supabase.from('categories').delete().eq('id', categoryId);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
+  const createSubcategory = async ({ categoryId, name }) => {
+    if (!supabase || !user) return;
+    const normalized = (name || '').trim();
+    if (!categoryId) throw new Error('Selecciona una categoría.');
+    if (!normalized) throw new Error('Escribe una subcategoría válida.');
+
+    const { error } = await supabase.from('subcategories').insert([
+      {
+        category_id: categoryId,
+        name: normalized,
+        created_by: user.id
+      }
+    ]);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
+  const deleteSubcategory = async (subcategoryId) => {
+    if (!supabase || !user) return;
+    const { error } = await supabase.from('subcategories').delete().eq('id', subcategoryId);
+    if (error) throw error;
+    await loadMarketplaceData();
+  };
+
   const markProductUnavailable = async (productId) => {
     if (!supabase) return;
     const { error } = await supabase
@@ -310,6 +410,28 @@ function App() {
   const visibleBanners = useMemo(
     () => banners.filter((item) => item.active),
     [banners]
+  );
+  const categoryFilterOptions = useMemo(() => {
+    const ids = new Set(products.map((item) => item.categoryId).filter(Boolean));
+    return categories.filter((item) => ids.has(item.id));
+  }, [categories, products]);
+  const subcategoryFilterOptions = useMemo(() => {
+    const ids = new Set(
+      products
+        .filter((item) => !selectedCategoryFilter || item.categoryId === selectedCategoryFilter)
+        .map((item) => item.subcategoryId)
+        .filter(Boolean)
+    );
+    return subcategories.filter((item) => ids.has(item.id));
+  }, [subcategories, products, selectedCategoryFilter]);
+  const filteredProducts = useMemo(
+    () =>
+      products.filter(
+        (item) =>
+          (!selectedCategoryFilter || item.categoryId === selectedCategoryFilter) &&
+          (!selectedSubcategoryFilter || item.subcategoryId === selectedSubcategoryFilter)
+      ),
+    [products, selectedCategoryFilter, selectedSubcategoryFilter]
   );
 
   return (
@@ -394,24 +516,63 @@ function App() {
             onCreateBanner={createBanner}
             onToggleBanner={toggleBanner}
             onDeleteBanner={deleteBanner}
+            categories={categories}
+            subcategories={subcategories}
+            onCreateCategory={createCategory}
+            onDeleteCategory={deleteCategory}
+            onCreateSubcategory={createSubcategory}
+            onDeleteSubcategory={deleteSubcategory}
           />
         )}
 
         <section className="products-section">
           <div className="section-head">
             <h2>Productos</h2>
-            <p>{products.length} producto{products.length !== 1 ? 's' : ''}</p>
+            <p>{filteredProducts.length} producto{filteredProducts.length !== 1 ? 's' : ''}</p>
           </div>
+
+          {!actingAsAdmin && (
+            <section className="product-filters card">
+              <select
+                value={selectedCategoryFilter}
+                onChange={(e) => {
+                  setSelectedCategoryFilter(e.target.value);
+                  setSelectedSubcategoryFilter('');
+                }}
+              >
+                <option value="">Todas las categorías</option>
+                {categoryFilterOptions.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={selectedSubcategoryFilter}
+                onChange={(e) => setSelectedSubcategoryFilter(e.target.value)}
+                disabled={!selectedCategoryFilter && subcategoryFilterOptions.length === 0}
+              >
+                <option value="">Todas las subcategorías</option>
+                {subcategoryFilterOptions
+                  .filter((item) => !selectedCategoryFilter || item.categoryId === selectedCategoryFilter)
+                  .map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+              </select>
+            </section>
+          )}
 
           {loadingProducts ? (
             <p className="status-text">Cargando productos...</p>
           ) : productsError ? (
             <p className="status-text error-text">{productsError}</p>
-          ) : products.length === 0 ? (
+          ) : filteredProducts.length === 0 ? (
             <p className="status-text">No hay productos todavía.</p>
           ) : (
             <div className="products-grid">
-              {products.map((product) => (
+              {filteredProducts.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}

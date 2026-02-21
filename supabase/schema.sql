@@ -37,6 +37,26 @@ alter table public.products
   add column if not exists cuotas_usd int default 1 check (cuotas_usd >= 1),
   add column if not exists interes_usd numeric default 0 check (interes_usd >= 0);
 
+create table if not exists public.categories (
+  id uuid primary key default gen_random_uuid(),
+  name text not null unique check (length(trim(name)) > 0 and length(name) <= 60),
+  created_by uuid not null references auth.users(id) on delete restrict,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.subcategories (
+  id uuid primary key default gen_random_uuid(),
+  category_id uuid not null references public.categories(id) on delete cascade,
+  name text not null check (length(trim(name)) > 0 and length(name) <= 60),
+  created_by uuid not null references auth.users(id) on delete restrict,
+  created_at timestamptz not null default now(),
+  unique (category_id, name)
+);
+
+alter table public.products
+  add column if not exists categoria_id uuid references public.categories(id) on delete set null,
+  add column if not exists subcategoria_id uuid references public.subcategories(id) on delete set null;
+
 create table if not exists public.comments (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null references public.products(id) on delete cascade,
@@ -70,11 +90,15 @@ create index if not exists products_fecha_creacion_idx on public.products (fecha
 create index if not exists comments_product_fecha_idx on public.comments (product_id, fecha desc);
 create index if not exists offers_product_fecha_idx on public.offers (product_id, fecha desc);
 create index if not exists announcements_created_at_idx on public.announcements (created_at desc);
+create index if not exists categories_created_at_idx on public.categories (created_at desc);
+create index if not exists subcategories_category_idx on public.subcategories (category_id, created_at desc);
 
 alter table public.products enable row level security;
 alter table public.comments enable row level security;
 alter table public.offers enable row level security;
 alter table public.announcements enable row level security;
+alter table public.categories enable row level security;
+alter table public.subcategories enable row level security;
 
 drop policy if exists products_select_all on public.products;
 create policy products_select_all on public.products for select using (true);
@@ -127,6 +151,44 @@ with check (public.is_admin());
 
 drop policy if exists announcements_delete_admin on public.announcements;
 create policy announcements_delete_admin on public.announcements
+for delete to authenticated
+using (public.is_admin());
+
+drop policy if exists categories_select_all on public.categories;
+create policy categories_select_all on public.categories for select using (true);
+
+drop policy if exists categories_insert_admin on public.categories;
+create policy categories_insert_admin on public.categories
+for insert to authenticated
+with check (public.is_admin());
+
+drop policy if exists categories_update_admin on public.categories;
+create policy categories_update_admin on public.categories
+for update to authenticated
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists categories_delete_admin on public.categories;
+create policy categories_delete_admin on public.categories
+for delete to authenticated
+using (public.is_admin());
+
+drop policy if exists subcategories_select_all on public.subcategories;
+create policy subcategories_select_all on public.subcategories for select using (true);
+
+drop policy if exists subcategories_insert_admin on public.subcategories;
+create policy subcategories_insert_admin on public.subcategories
+for insert to authenticated
+with check (public.is_admin());
+
+drop policy if exists subcategories_update_admin on public.subcategories;
+create policy subcategories_update_admin on public.subcategories
+for update to authenticated
+using (public.is_admin())
+with check (public.is_admin());
+
+drop policy if exists subcategories_delete_admin on public.subcategories;
+create policy subcategories_delete_admin on public.subcategories
 for delete to authenticated
 using (public.is_admin());
 

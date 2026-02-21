@@ -8,6 +8,8 @@ const initialForm = {
   title: '',
   description: '',
   tiempoUso: '',
+  categoryId: '',
+  subcategoryId: '',
   precioArs: '',
   precioUsd: '',
   cuotasArs: 1,
@@ -95,7 +97,13 @@ function AdminPanel({
   banners = [],
   onCreateBanner,
   onToggleBanner,
-  onDeleteBanner
+  onDeleteBanner,
+  categories = [],
+  subcategories = [],
+  onCreateCategory,
+  onDeleteCategory,
+  onCreateSubcategory,
+  onDeleteSubcategory
 }) {
   const [form, setForm] = useState(initialForm);
   const [isSaving, setIsSaving] = useState(false);
@@ -105,6 +113,12 @@ function AdminPanel({
   const [bannerTone, setBannerTone] = useState('info');
   const [bannerSaving, setBannerSaving] = useState(false);
   const [bannerError, setBannerError] = useState('');
+  const [categoryName, setCategoryName] = useState('');
+  const [subCategoryName, setSubCategoryName] = useState('');
+  const [subCategoryParent, setSubCategoryParent] = useState('');
+  const [categorySaving, setCategorySaving] = useState(false);
+  const [subCategorySaving, setSubCategorySaving] = useState(false);
+  const [categoryError, setCategoryError] = useState('');
 
   useEffect(() => {
     if (!editingProduct) {
@@ -117,6 +131,8 @@ function AdminPanel({
       title: editingProduct.title,
       description: editingProduct.description,
       tiempoUso: isIsoDate(editingProduct.tiempoUso) ? editingProduct.tiempoUso : '',
+      categoryId: editingProduct.categoryId || '',
+      subcategoryId: editingProduct.subcategoryId || '',
       precioArs: editingProduct.precioArs ? Number(editingProduct.precioArs).toLocaleString('es-AR') : '',
       precioUsd: editingProduct.precioUsd ? Number(editingProduct.precioUsd).toLocaleString('es-AR') : '',
       cuotasArs: editingProduct.cuotasArs || 1,
@@ -128,6 +144,20 @@ function AdminPanel({
       existingImages: editingProduct.imagenes || []
     });
   }, [editingProduct]);
+
+  useEffect(() => {
+    if (!subCategoryParent && categories.length > 0) {
+      setSubCategoryParent(categories[0].id);
+    }
+  }, [categories, subCategoryParent]);
+
+  useEffect(() => {
+    if (!form.categoryId || !form.subcategoryId) return;
+    const selectedSubcategory = subcategories.find((item) => item.id === form.subcategoryId);
+    if (!selectedSubcategory || selectedSubcategory.categoryId !== form.categoryId) {
+      setForm((prev) => ({ ...prev, subcategoryId: '' }));
+    }
+  }, [form.categoryId, form.subcategoryId, subcategories]);
 
   const resetForm = () => {
     setForm(initialForm);
@@ -164,6 +194,9 @@ function AdminPanel({
   const basePriceArs = parseFormattedNumber(form.precioArs);
   const basePriceUsd = parseFormattedNumber(form.precioUsd);
   const sortedBanners = [...banners].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+  const sortedCategories = [...categories].sort((a, b) => a.name.localeCompare(b.name));
+  const sortedSubcategories = [...subcategories].sort((a, b) => a.name.localeCompare(b.name));
+  const productSubcategories = sortedSubcategories.filter((item) => item.categoryId === form.categoryId);
 
   const handleCreateBanner = async (event) => {
     event.preventDefault();
@@ -183,6 +216,50 @@ function AdminPanel({
       setBannerError(error?.message || 'No se pudo crear el cartel.');
     } finally {
       setBannerSaving(false);
+    }
+  };
+
+  const handleCreateCategory = async (event) => {
+    event.preventDefault();
+    const name = categoryName.trim();
+    if (!name) {
+      setCategoryError('Escribe una categoría.');
+      return;
+    }
+
+    setCategorySaving(true);
+    setCategoryError('');
+    try {
+      await onCreateCategory?.(name);
+      setCategoryName('');
+    } catch (error) {
+      setCategoryError(error?.message || 'No se pudo crear la categoría.');
+    } finally {
+      setCategorySaving(false);
+    }
+  };
+
+  const handleCreateSubcategory = async (event) => {
+    event.preventDefault();
+    const name = subCategoryName.trim();
+    if (!subCategoryParent) {
+      setCategoryError('Selecciona una categoría para la subcategoría.');
+      return;
+    }
+    if (!name) {
+      setCategoryError('Escribe una subcategoría.');
+      return;
+    }
+
+    setSubCategorySaving(true);
+    setCategoryError('');
+    try {
+      await onCreateSubcategory?.({ categoryId: subCategoryParent, name });
+      setSubCategoryName('');
+    } catch (error) {
+      setCategoryError(error?.message || 'No se pudo crear la subcategoría.');
+    } finally {
+      setSubCategorySaving(false);
     }
   };
 
@@ -221,6 +298,38 @@ function AdminPanel({
             onChange={(e) => setForm((prev) => ({ ...prev, tiempoUso: e.target.value }))}
           />
         </label>
+
+        <div className="form-row">
+          <select
+            value={form.categoryId}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                categoryId: e.target.value,
+                subcategoryId: ''
+              }))
+            }
+          >
+            <option value="">Sin categoría</option>
+            {sortedCategories.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+          <select
+            value={form.subcategoryId}
+            onChange={(e) => setForm((prev) => ({ ...prev, subcategoryId: e.target.value }))}
+            disabled={!form.categoryId}
+          >
+            <option value="">Sin subcategoría</option>
+            {productSubcategories.map((item) => (
+              <option key={item.id} value={item.id}>
+                {item.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="price-currency-group">
           <div className="input-with-prefix">
@@ -327,6 +436,93 @@ function AdminPanel({
       </form>
 
       <section className="banner-admin">
+        <div className="section-head">
+          <h2>Categorías</h2>
+          <p>{sortedCategories.length} categorías</p>
+        </div>
+
+        <form className="inline-form" onSubmit={handleCreateCategory}>
+          <input
+            type="text"
+            placeholder="Nueva categoría"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
+            maxLength={60}
+          />
+          <button type="submit" className="button" disabled={categorySaving}>
+            {categorySaving ? 'Creando...' : 'Crear categoría'}
+          </button>
+        </form>
+
+        <form className="inline-form" onSubmit={handleCreateSubcategory}>
+          <div className="form-row">
+            <select value={subCategoryParent} onChange={(e) => setSubCategoryParent(e.target.value)}>
+              {sortedCategories.length === 0 && <option value="">Sin categorías</option>}
+              {sortedCategories.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+            <input
+              type="text"
+              placeholder="Nueva subcategoría"
+              value={subCategoryName}
+              onChange={(e) => setSubCategoryName(e.target.value)}
+              maxLength={60}
+            />
+          </div>
+          <button type="submit" className="button" disabled={subCategorySaving || sortedCategories.length === 0}>
+            {subCategorySaving ? 'Creando...' : 'Crear subcategoría'}
+          </button>
+          {categoryError && <p className="status-text error-text">{categoryError}</p>}
+        </form>
+
+        <div className="banner-admin-list">
+          {sortedCategories.length === 0 ? (
+            <p className="status-text">No hay categorías creadas.</p>
+          ) : (
+            sortedCategories.map((category) => (
+              <article key={category.id} className="banner-admin-item">
+                <p>{category.name}</p>
+                <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button danger"
+                    onClick={() => onDeleteCategory?.(category.id)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
+        <div className="banner-admin-list">
+          {sortedSubcategories.length === 0 ? (
+            <p className="status-text">No hay subcategorías creadas.</p>
+          ) : (
+            sortedSubcategories.map((subcategory) => (
+              <article key={subcategory.id} className="banner-admin-item">
+                <p>
+                  {subcategory.name}
+                  <small> · {sortedCategories.find((item) => item.id === subcategory.categoryId)?.name || 'Sin categoría'}</small>
+                </p>
+                <div className="row-actions">
+                  <button
+                    type="button"
+                    className="button danger"
+                    onClick={() => onDeleteSubcategory?.(subcategory.id)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
         <div className="section-head">
           <h2>Carteles</h2>
           <p>{sortedBanners.length} total</p>
