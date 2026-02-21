@@ -253,6 +253,12 @@ body[data-theme='dark']::before {
   gap: 6px;
 }
 
+.admin-settings-button {
+  font-size: 0.72rem;
+  min-height: 30px;
+  padding: 4px 10px;
+}
+
 .theme-toggle {
   min-height: auto;
   min-width: auto;

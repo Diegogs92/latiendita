@@ -595,7 +595,7 @@ function AdminPanel({
           <p>Organiza categorías y subcategorías</p>
         </div>
 
-        <section className="taxonomy-grid">
+        <section className="taxonomy-grid" id="taxonomy-manager">
           <article className="taxonomy-card">
             <div className="taxonomy-card-head">
               <h3>Categorías</h3>

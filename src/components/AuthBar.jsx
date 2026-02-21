@@ -1,4 +1,4 @@
-function AuthBar({ user, isAdmin, onLogout, theme, onToggleTheme }) {
+function AuthBar({ user, isAdmin, onOpenSettings, onLogout, theme, onToggleTheme }) {
   return (
     <div className="authbar">
       <button
@@ -17,6 +17,9 @@ function AuthBar({ user, isAdmin, onLogout, theme, onToggleTheme }) {
 
       {user && isAdmin ? (
         <>
+          <button type="button" className="button secondary admin-settings-button" onClick={onOpenSettings}>
+            Configuracion
+          </button>
           <div className="user-chip">
             <img src={user.photoURL || ''} alt="" />
             <div>

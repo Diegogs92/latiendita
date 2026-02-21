@@ -424,6 +424,25 @@ function App() {
     }
   };
 
+  const openTaxonomySettings = () => {
+    if (!canUseAdminFeatures) return;
+
+    const scrollToTaxonomy = () => {
+      const section = document.getElementById('taxonomy-manager');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    if (!actingAsAdmin) {
+      setViewMode('developer');
+      setTimeout(scrollToTaxonomy, 60);
+      return;
+    }
+
+    scrollToTaxonomy();
+  };
+
   const uiUser = user
     ? {
         uid: user.id,
@@ -479,6 +498,7 @@ function App() {
         <AuthBar
           user={uiUser}
           isAdmin={canUseAdminFeatures}
+          onOpenSettings={openTaxonomySettings}
           onLogout={handleLogout}
           theme={theme}
           onToggleTheme={() => setTheme((current) => (current === 'light' ? 'dark' : 'light'))}
