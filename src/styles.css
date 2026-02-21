@@ -1086,6 +1086,7 @@ textarea { min-height: 64px; resize: vertical; }
 .products-grid {
   display: grid;
   gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
 }
 
 /* ── Product card (compact) ───────────────────────────── */
@@ -1716,12 +1717,6 @@ textarea { min-height: 64px; resize: vertical; }
 @media (max-width: 560px) {
   .product-filters {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (min-width: 480px) {
-  .products-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }
 
