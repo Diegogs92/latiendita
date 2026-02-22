@@ -24,6 +24,11 @@ function App() {
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('Disponible');
   const [showTaxonomyModal, setShowTaxonomyModal] = useState(false);
   const [showBannerPublisherModal, setShowBannerPublisherModal] = useState(false);
+  const isAdminPath = useMemo(() => {
+    if (typeof window === 'undefined') return false;
+    const pathname = window.location.pathname || '/';
+    return pathname === '/admin' || pathname.startsWith('/admin/');
+  }, []);
 
   const loadMarketplaceData = async () => {
     if (!supabase) {
@@ -187,6 +192,12 @@ function App() {
   }, [actingAsAdmin]);
 
   useEffect(() => {
+    if (isAdminPath && viewMode !== 'developer') {
+      setViewMode('developer');
+    }
+  }, [isAdminPath, viewMode]);
+
+  useEffect(() => {
     loadMarketplaceData().catch((error) => {
       console.error('Load marketplace error:', error);
       setProducts([]);
@@ -201,7 +212,7 @@ function App() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin
+        redirectTo: `${window.location.origin}/admin`
       }
     });
   };
@@ -497,6 +508,29 @@ function App() {
       ),
     [products, selectedCategoryFilter, selectedSubcategoryFilter, selectedStatusFilter]
   );
+
+  if (isAdminPath && !isAdmin) {
+    return (
+      <div className="app-shell">
+        <header className="topbar">
+          <div className="brand">
+            <img className="brand-logo" src="/logo.svg" alt="Logo La tiendita de Diego" />
+            <h1 className="friendly-title">La tiendita de Diego</h1>
+          </div>
+        </header>
+
+        <main className="content">
+          <section className="card status-block">
+            <h2>Acceso administrador</h2>
+            <p>Inicia sesión con Google para acceder al panel de administración.</p>
+            <button type="button" className="button" onClick={handleLogin}>
+              Ingresar con Google
+            </button>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="app-shell">
