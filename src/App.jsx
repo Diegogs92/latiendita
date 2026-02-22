@@ -677,11 +677,6 @@ function App() {
         </section>
       </main>
 
-      {!isAdmin && (
-        <button type="button" className="admin-entry-button" onClick={handleLogin} aria-label="Acceso administrador">
-          Admin
-        </button>
-      )}
     </div>
   );
 }
