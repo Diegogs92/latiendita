@@ -10,6 +10,7 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) 
 
   const arsPrice = Number(product.precioArs) || 0;
   const usdPrice = Number(product.precioUsd) || 0;
+  const getOriginalPrice = (price) => Math.round(price * 1.2);
 
   const whatsappNumber = '543815151163';
   const message = `Hola, te escribo por ${product.title}`;
@@ -54,9 +55,23 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) 
           {!isUnavailable && (
             <>
               <div className="card-prices">
-                {arsPrice > 0 && <span className="card-price">$ {arsPrice.toLocaleString('es-AR')}</span>}
-                {usdPrice > 0 && <span className={`card-price${arsPrice > 0 ? ' secondary' : ''}`}>US$ {usdPrice.toLocaleString('es-AR')}</span>}
+                {arsPrice > 0 && (
+                  <span className="card-price-group">
+                    <span className="card-price-old">$ {getOriginalPrice(arsPrice).toLocaleString('es-AR')}</span>
+                    <span className="card-price">$ {arsPrice.toLocaleString('es-AR')}</span>
+                  </span>
+                )}
+                {usdPrice > 0 && (
+                  <span className="card-price-group">
+                    <span className={`card-price-old${arsPrice > 0 ? ' secondary' : ''}`}>
+                      US$ {getOriginalPrice(usdPrice).toLocaleString('es-AR')}
+                    </span>
+                    <span className={`card-price${arsPrice > 0 ? ' secondary' : ''}`}>US$ {usdPrice.toLocaleString('es-AR')}</span>
+                  </span>
+                )}
               </div>
+              {(arsPrice > 0 || usdPrice > 0) && <p className="card-price-label">Precio en un pago</p>}
+              {financingLines.length > 0 && <span className="card-financing-separator" aria-hidden="true" />}
               {financingLines.map((line) => (
                 <p key={line} className="card-financing">{line}</p>
               ))}
