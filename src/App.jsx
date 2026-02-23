@@ -183,7 +183,7 @@ function App() {
     const email = (user?.email || '').toLowerCase();
     return Boolean(email) && email === ADMIN_EMAIL;
   }, [user]);
-  const canUseAdminFeatures = isAdmin;
+  const canUseAdminFeatures = isAdmin && isAdminPath;
   const actingAsAdmin = canUseAdminFeatures && viewMode === 'developer';
   const userName = user?.user_metadata?.full_name || user?.user_metadata?.name || 'Usuario';
   const userPhoto = user?.user_metadata?.avatar_url || '';
