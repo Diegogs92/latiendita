@@ -10,6 +10,14 @@ const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase(
 const DEFAULT_WHATSAPP_NUMBER = '543815151163';
 const DEFAULT_SELLER_NAME = 'Diego';
 const normalizeWhatsappNumber = (value) => String(value || '').replace(/\D/g, '');
+const PRIMARY_DOMAIN = 'latienditadediego.com.ar';
+
+function getPreferredOrigin() {
+  if (typeof window === 'undefined') return '';
+  const host = window.location.hostname.toLowerCase();
+  if (host === 'localhost' || host === '127.0.0.1') return window.location.origin;
+  return `https://${PRIMARY_DOMAIN}`;
+}
 
 function App() {
   const [user, setUser] = useState(null);
@@ -203,6 +211,15 @@ function App() {
   }, [isAdminPath, viewMode]);
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const host = window.location.hostname.toLowerCase();
+    if (host === 'localhost' || host === '127.0.0.1' || host === PRIMARY_DOMAIN) return;
+
+    const { pathname, search, hash } = window.location;
+    window.location.replace(`https://${PRIMARY_DOMAIN}${pathname}${search}${hash}`);
+  }, []);
+
+  useEffect(() => {
     loadMarketplaceData().catch((error) => {
       console.error('Load marketplace error:', error);
       setProducts([]);
@@ -214,10 +231,11 @@ function App() {
   const handleLogin = async () => {
     if (!supabase) return;
 
+    const preferredOrigin = getPreferredOrigin() || window.location.origin;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/admin`
+        redirectTo: `${preferredOrigin}/admin`
       }
     });
   };

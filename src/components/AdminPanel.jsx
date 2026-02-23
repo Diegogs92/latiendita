@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+ï»¿import { useEffect, useState } from 'react';
 import { isIsoDate } from '../utils/usageTime';
 
 const CUOTAS_OPTIONS = [3, 6, 12, 18, 24];
@@ -371,8 +371,8 @@ function AdminPanel({
             </div>
             {dolarData && (
               <p className="fx-rate-line">
-                Venta: ${formatMoneyNumber(dolarData.venta)} · Compra: ${formatMoneyNumber(dolarData.compra)}
-                {dolarUpdatedAt ? ` · ${dolarUpdatedAt}` : ''}
+                Venta: ${formatMoneyNumber(dolarData.venta)} - Compra: ${formatMoneyNumber(dolarData.compra)}
+                {dolarUpdatedAt ? ` - ${dolarUpdatedAt}` : ''}
               </p>
             )}
             {dolarError && <p className="status-text error-text">{dolarError}</p>}
@@ -581,3 +581,4 @@ function AdminPanel({
 }
 
 export default AdminPanel;
+
