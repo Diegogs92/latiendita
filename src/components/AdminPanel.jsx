@@ -22,6 +22,7 @@ const initialForm = {
   cuotasUsd: 1,
   interesUsd: 0,
   whatsappNumber: '+543815151163',
+  sellerName: 'Diego',
   estado: 'Disponible',
   files: [],
   existingImages: []
@@ -86,14 +87,14 @@ function CuotasBlock({ label, symbol, basePrice, cuotas, interes, onChangeCuotas
               value={interes || ''}
               onChange={(e) => onChangeInteres(Number(e.target.value) || 0)}
             />
-            <span className="input-suffix">% interés</span>
+            <span className="input-suffix">% interes</span>
           </div>
           {basePrice > 0 && (
             <p className="cuota-preview">
               {cuotas}x {symbol} {cuotaPrice.toLocaleString('es-AR')}
               {interes > 0
                 ? ` (total: ${symbol} ${Math.round(totalConInteres).toLocaleString('es-AR')})`
-                : ' sin interés'}
+                : ' sin interes'}
             </p>
           )}
         </div>
@@ -106,8 +107,6 @@ function AdminPanel({
   editingProduct,
   onSave,
   onCancelEdit,
-  whatsappNumber = '543815151163',
-  onSaveWhatsappNumber,
   banners = [],
   onCreateBanner,
   onToggleBanner,
@@ -123,10 +122,6 @@ function AdminPanel({
   const [bannerTone, setBannerTone] = useState('info');
   const [bannerSaving, setBannerSaving] = useState(false);
   const [bannerError, setBannerError] = useState('');
-  const [whatsappInput, setWhatsappInput] = useState(`+${whatsappNumber}`);
-  const [whatsappSaving, setWhatsappSaving] = useState(false);
-  const [whatsappError, setWhatsappError] = useState('');
-  const [whatsappSuccess, setWhatsappSuccess] = useState('');
   const [dolarType, setDolarType] = useState('blue');
   const [dolarData, setDolarData] = useState(null);
   const [dolarLoading, setDolarLoading] = useState(false);
@@ -152,6 +147,7 @@ function AdminPanel({
       cuotasUsd: editingProduct.cuotasUsd || 1,
       interesUsd: editingProduct.interesUsd || 0,
       whatsappNumber: `+${String(editingProduct.whatsappNumber || '543815151163').replace(/\D/g, '')}`,
+      sellerName: String(editingProduct.sellerName || 'Diego').trim() || 'Diego',
       estado: editingProduct.estado,
       files: [],
       existingImages: editingProduct.imagenes || []
@@ -166,23 +162,19 @@ function AdminPanel({
     }
   }, [form.categoryId, form.subcategoryId, subcategories]);
 
-  useEffect(() => {
-    setWhatsappInput(`+${String(whatsappNumber || '').replace(/\D/g, '')}`);
-  }, [whatsappNumber]);
-
   const loadDolarQuote = async (selectedType = dolarType) => {
     setDolarLoading(true);
     setDolarError('');
     try {
       const response = await fetch(`https://dolarapi.com/v1/dolares/${selectedType}`);
       if (!response.ok) {
-        throw new Error('No se pudo obtener la cotización actual.');
+        throw new Error('No se pudo obtener la cotizacion actual.');
       }
       const data = await response.json();
       setDolarData(data);
     } catch (error) {
       setDolarData(null);
-      setDolarError(error?.message || 'No se pudo obtener la cotización actual.');
+      setDolarError(error?.message || 'No se pudo obtener la cotizacion actual.');
     } finally {
       setDolarLoading(false);
     }
@@ -202,6 +194,7 @@ function AdminPanel({
     const precioArs = parseFormattedNumber(form.precioArs);
     const precioUsd = parseFormattedNumber(form.precioUsd);
     const whatsappNumber = String(form.whatsappNumber || '').replace(/\D/g, '');
+    const sellerName = String(form.sellerName || '').trim();
 
     if (!precioArs && !precioUsd) {
       setSaveError('Carga al menos un precio: ARS o USD.');
@@ -209,7 +202,12 @@ function AdminPanel({
     }
 
     if (whatsappNumber.length < 8) {
-      setSaveError('El WhatsApp de la publicación debe tener al menos 8 dígitos.');
+      setSaveError('El WhatsApp de la publicacion debe tener al menos 8 digitos.');
+      return;
+    }
+
+    if (!sellerName) {
+      setSaveError('Escribe el nombre del vendedor.');
       return;
     }
 
@@ -221,6 +219,7 @@ function AdminPanel({
         precioArs,
         precioUsd,
         whatsappNumber,
+        sellerName,
         files: Array.from(form.files)
       });
       resetForm();
@@ -268,29 +267,6 @@ function AdminPanel({
     }
   };
 
-  const handleSaveWhatsapp = async (event) => {
-    event.preventDefault();
-    const normalized = String(whatsappInput || '').replace(/\D/g, '');
-    if (normalized.length < 8) {
-      setWhatsappError('Escribe un número válido (mínimo 8 dígitos).');
-      setWhatsappSuccess('');
-      return;
-    }
-
-    setWhatsappSaving(true);
-    setWhatsappError('');
-    setWhatsappSuccess('');
-    try {
-      await onSaveWhatsappNumber?.(normalized);
-      setWhatsappInput(`+${normalized}`);
-      setWhatsappSuccess('Número actualizado.');
-    } catch (error) {
-      setWhatsappError(error?.message || 'No se pudo actualizar el número de WhatsApp.');
-    } finally {
-      setWhatsappSaving(false);
-    }
-  };
-
   return (
     <section className="admin-panel card" id="admin-editor">
       <div className="section-head">
@@ -304,20 +280,20 @@ function AdminPanel({
 
       <form onSubmit={handleSubmit} className="admin-form compact">
         <div className="admin-guidance">
-          <p>Carga rápida para admin</p>
-          <small>Completa título, descripción, precios y estado. Puedes usar el asistente ARS/USD debajo.</small>
+          <p>Carga rapida para admin</p>
+          <small>Completa titulo, descripcion, precios y estado. Puedes usar el asistente ARS/USD debajo.</small>
         </div>
 
         <input
           required
           type="text"
-          placeholder="Título"
+          placeholder="Titulo"
           value={form.title}
           onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
         />
         <textarea
           required
-          placeholder="Descripción (una línea por especificación)"
+          placeholder="Descripcion (una linea por especificacion)"
           value={form.description}
           onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
           rows={3}
@@ -343,7 +319,7 @@ function AdminPanel({
               }))
             }
           >
-            <option value="">Sin categoría</option>
+            <option value="">Sin categoria</option>
             {sortedCategories.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.name}
@@ -355,7 +331,7 @@ function AdminPanel({
             onChange={(e) => setForm((prev) => ({ ...prev, subcategoryId: e.target.value }))}
             disabled={!form.categoryId}
           >
-            <option value="">Sin subcategoría</option>
+            <option value="">Sin subcategoria</option>
             {productSubcategories.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.name}
@@ -367,7 +343,7 @@ function AdminPanel({
         <div className="price-currency-group">
           <div className="fx-assistant">
             <div className="fx-assistant-head">
-              <p>Asistente de cotización</p>
+              <p>Asistente de cotizacion</p>
               <div className="fx-controls">
                 <select
                   value={dolarType}
@@ -379,7 +355,7 @@ function AdminPanel({
                 >
                   {DOLAR_TYPE_OPTIONS.map((option) => (
                     <option key={option.id} value={option.id}>
-                      Dólar {option.label}
+                      Dolar {option.label}
                     </option>
                   ))}
                 </select>
@@ -395,8 +371,8 @@ function AdminPanel({
             </div>
             {dolarData && (
               <p className="fx-rate-line">
-                Venta: ${formatMoneyNumber(dolarData.venta)} · Compra: ${formatMoneyNumber(dolarData.compra)}
-                {dolarUpdatedAt ? ` · ${dolarUpdatedAt}` : ''}
+                Venta: ${formatMoneyNumber(dolarData.venta)} � Compra: ${formatMoneyNumber(dolarData.compra)}
+                {dolarUpdatedAt ? ` � ${dolarUpdatedAt}` : ''}
               </p>
             )}
             {dolarError && <p className="status-text error-text">{dolarError}</p>}
@@ -477,23 +453,34 @@ function AdminPanel({
         >
           <option value="Disponible">Disponible</option>
           <option value="Vendido">Vendido</option>
-          <option value="Proximamente">Próximamente</option>
+          <option value="Proximamente">Proximamente</option>
         </select>
 
-        <label className="file-upload-label">
-          WhatsApp de esta publicación
-          <input
-            type="tel"
-            inputMode="tel"
-            placeholder="+543815151163"
-            value={form.whatsappNumber}
-            onChange={(e) => setForm((prev) => ({ ...prev, whatsappNumber: e.target.value }))}
-          />
-        </label>
+        <div className="form-row">
+          <label className="file-upload-label">
+            WhatsApp de esta publicacion
+            <input
+              type="tel"
+              inputMode="tel"
+              placeholder="+543815151163"
+              value={form.whatsappNumber}
+              onChange={(e) => setForm((prev) => ({ ...prev, whatsappNumber: e.target.value }))}
+            />
+          </label>
+          <label className="file-upload-label">
+            Nombre del vendedor
+            <input
+              type="text"
+              placeholder="Diego"
+              value={form.sellerName}
+              onChange={(e) => setForm((prev) => ({ ...prev, sellerName: e.target.value }))}
+            />
+          </label>
+        </div>
 
         {form.existingImages.length > 0 && (
           <div className="admin-images-preview">
-            <p className="admin-images-label">Imágenes actuales:</p>
+            <p className="admin-images-label">Imagenes actuales:</p>
             <div className="admin-images-grid">
               {form.existingImages.map((url, i) => (
                 <div key={url} className="admin-image-thumb">
@@ -519,7 +506,7 @@ function AdminPanel({
         )}
 
         <label className="file-upload-label">
-          Agregar imágenes {form.existingImages.length > 0 ? '(se suman a las actuales)' : ''}
+          Agregar imagenes {form.existingImages.length > 0 ? '(se suman a las actuales)' : ''}
           <input
             type="file"
             accept="image/*"
@@ -533,28 +520,6 @@ function AdminPanel({
         </button>
         {saveError && <p className="status-text error-text">{saveError}</p>}
       </form>
-
-      <section className="contact-settings">
-        <div className="section-head">
-          <h2>WhatsApp</h2>
-        </div>
-        <form className="inline-form" onSubmit={handleSaveWhatsapp}>
-          <input
-            type="tel"
-            inputMode="tel"
-            placeholder="+543815151163"
-            value={whatsappInput}
-            onChange={(e) => setWhatsappInput(e.target.value)}
-          />
-          <div className="form-row">
-            <button type="submit" className="button" disabled={whatsappSaving}>
-              {whatsappSaving ? 'Guardando...' : 'Guardar número'}
-            </button>
-          </div>
-          {whatsappError && <p className="status-text error-text">{whatsappError}</p>}
-          {whatsappSuccess && <p className="status-text">{whatsappSuccess}</p>}
-        </form>
-      </section>
 
       <section className="banner-admin">
         <div className="section-head">
@@ -616,4 +581,3 @@ function AdminPanel({
 }
 
 export default AdminPanel;
-

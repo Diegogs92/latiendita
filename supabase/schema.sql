@@ -20,6 +20,7 @@ create table if not exists public.products (
   interes numeric not null default 0 check (interes >= 0),
   imagenes text[] not null default '{}',
   whatsapp_number text check (whatsapp_number is null or whatsapp_number ~ '^[0-9]{8,20}$'),
+  seller_name text not null default 'Diego' check (length(trim(seller_name)) > 0 and length(seller_name) <= 80),
   creado_por uuid not null references auth.users(id) on delete restrict,
   fecha_creacion timestamptz not null default now(),
   estado text not null default 'Disponible' check (estado in ('Disponible', 'Vendido', 'Proximamente')),
@@ -37,7 +38,8 @@ alter table public.products
   add column if not exists interes_ars numeric default 0 check (interes_ars >= 0),
   add column if not exists cuotas_usd int default 1 check (cuotas_usd >= 1),
   add column if not exists interes_usd numeric default 0 check (interes_usd >= 0),
-  add column if not exists whatsapp_number text check (whatsapp_number is null or whatsapp_number ~ '^[0-9]{8,20}$');
+  add column if not exists whatsapp_number text check (whatsapp_number is null or whatsapp_number ~ '^[0-9]{8,20}$'),
+  add column if not exists seller_name text default 'Diego' check (length(trim(seller_name)) > 0 and length(seller_name) <= 80);
 
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),
@@ -88,17 +90,6 @@ create table if not exists public.announcements (
   created_at timestamptz not null default now()
 );
 
-create table if not exists public.marketplace_settings (
-  id int primary key check (id = 1),
-  whatsapp_number text not null default '543815151163' check (whatsapp_number ~ '^[0-9]{8,20}$'),
-  updated_by uuid references auth.users(id) on delete set null,
-  updated_at timestamptz not null default now()
-);
-
-insert into public.marketplace_settings (id, whatsapp_number)
-values (1, '543815151163')
-on conflict (id) do nothing;
-
 create index if not exists products_fecha_creacion_idx on public.products (fecha_creacion desc);
 create index if not exists comments_product_fecha_idx on public.comments (product_id, fecha desc);
 create index if not exists offers_product_fecha_idx on public.offers (product_id, fecha desc);
@@ -112,7 +103,6 @@ alter table public.offers enable row level security;
 alter table public.announcements enable row level security;
 alter table public.categories enable row level security;
 alter table public.subcategories enable row level security;
-alter table public.marketplace_settings enable row level security;
 
 drop policy if exists products_select_all on public.products;
 create policy products_select_all on public.products for select using (true);
@@ -205,20 +195,6 @@ drop policy if exists subcategories_delete_admin on public.subcategories;
 create policy subcategories_delete_admin on public.subcategories
 for delete to authenticated
 using (public.is_admin());
-
-drop policy if exists marketplace_settings_select_all on public.marketplace_settings;
-create policy marketplace_settings_select_all on public.marketplace_settings for select using (true);
-
-drop policy if exists marketplace_settings_insert_admin on public.marketplace_settings;
-create policy marketplace_settings_insert_admin on public.marketplace_settings
-for insert to authenticated
-with check (public.is_admin());
-
-drop policy if exists marketplace_settings_update_admin on public.marketplace_settings;
-create policy marketplace_settings_update_admin on public.marketplace_settings
-for update to authenticated
-using (public.is_admin())
-with check (public.is_admin());
 
 create or replace function public.buy_product(p_product_id uuid)
 returns void

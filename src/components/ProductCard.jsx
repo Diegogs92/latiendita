@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ProductModal from './ProductModal';
 import { formatUsageDuration } from '../utils/usageTime';
 
-function ProductCard({ product, whatsappNumber = '543815151163', isAdmin, onEdit, onDelete, onMarkUnavailable }) {
+function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) {
   const [showModal, setShowModal] = useState(false);
   const images = product.imagenes || [];
   const cover = images[0];
@@ -12,11 +12,9 @@ function ProductCard({ product, whatsappNumber = '543815151163', isAdmin, onEdit
   const usdPrice = Number(product.precioUsd) || 0;
   const getOriginalPrice = (price) => Math.round(price * 1.2);
 
-  const whatsappDigits =
-    String(product.whatsappNumber || '').replace(/\D/g, '') ||
-    String(whatsappNumber || '').replace(/\D/g, '') ||
-    '543815151163';
-  const message = `Hola, te escribo por ${product.title}`;
+  const whatsappDigits = String(product.whatsappNumber || '').replace(/\D/g, '') || '543815151163';
+  const sellerName = String(product.sellerName || '').trim() || 'Diego';
+  const message = `Hola ${sellerName}, te escribo por ${product.title}`;
   const whatsappHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
 
   const financingLines = [];
@@ -113,7 +111,6 @@ function ProductCard({ product, whatsappNumber = '543815151163', isAdmin, onEdit
       {showModal && (
         <ProductModal
           product={product}
-          whatsappNumber={whatsappDigits}
           isAdmin={isAdmin}
           onEdit={onEdit}
           onDelete={onDelete}

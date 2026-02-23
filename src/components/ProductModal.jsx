@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { formatUsageDuration } from '../utils/usageTime';
 
-function ProductModal({ product, whatsappNumber = '543815151163', isAdmin, onEdit, onDelete, onMarkUnavailable, onClose }) {
+function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAllSpecs, setShowAllSpecs] = useState(false);
   const panelRef = useRef(null);
@@ -10,11 +10,9 @@ function ProductModal({ product, whatsappNumber = '543815151163', isAdmin, onEdi
 
   const goTo = (index) => setCurrentIndex(((index % total) + total) % total);
 
-  const whatsappDigits =
-    String(product.whatsappNumber || '').replace(/\D/g, '') ||
-    String(whatsappNumber || '').replace(/\D/g, '') ||
-    '543815151163';
-  const message = `Hola, te escribo por ${product.title}`;
+  const whatsappDigits = String(product.whatsappNumber || '').replace(/\D/g, '') || '543815151163';
+  const sellerName = String(product.sellerName || '').trim() || 'Diego';
+  const message = `Hola ${sellerName}, te escribo por ${product.title}`;
   const whatsappHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
 
   const specs = (product.description || '')
@@ -228,7 +226,7 @@ function ProductModal({ product, whatsappNumber = '543815151163', isAdmin, onEdi
               <a className="button wa-offer-button" href={whatsappHref} target="_blank" rel="noreferrer">
                 <span className="wa-offer-label">Ofertar por WhatsApp</span>
               </a>
-              <p className="offer-helper">Respuesta directa de Diego</p>
+              <p className="offer-helper">Respuesta directa de {sellerName}</p>
             </div>
           ) : null}
 

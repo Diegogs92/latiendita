@@ -8,6 +8,7 @@ import { supabase, supabaseConfigError } from './supabase';
 
 const ADMIN_EMAIL = (import.meta.env.VITE_ADMIN_EMAIL || '').trim().toLowerCase();
 const DEFAULT_WHATSAPP_NUMBER = '543815151163';
+const DEFAULT_SELLER_NAME = 'Diego';
 const normalizeWhatsappNumber = (value) => String(value || '').replace(/\D/g, '');
 
 function App() {
@@ -26,7 +27,6 @@ function App() {
   const [selectedStatusFilter, setSelectedStatusFilter] = useState('Disponible');
   const [showTaxonomyModal, setShowTaxonomyModal] = useState(false);
   const [showBannerPublisherModal, setShowBannerPublisherModal] = useState(false);
-  const [whatsappNumber, setWhatsappNumber] = useState(DEFAULT_WHATSAPP_NUMBER);
   const isAdminPath = useMemo(() => {
     if (typeof window === 'undefined') return false;
     const pathname = window.location.pathname || '/';
@@ -109,6 +109,7 @@ function App() {
       cuotasUsd: item.cuotas_usd || 1,
       interesUsd: item.interes_usd || 0,
       whatsappNumber: normalizeWhatsappNumber(item.whatsapp_number) || DEFAULT_WHATSAPP_NUMBER,
+      sellerName: String(item.seller_name || '').trim() || DEFAULT_SELLER_NAME,
       imagenes: item.imagenes || [],
       estado: item.estado,
       compradorId: item.comprador_id
@@ -133,27 +134,6 @@ function App() {
       active: Boolean(item.active),
       createdAt: item.created_at || ''
     }));
-
-    const settingsRes = await supabase
-      .from('marketplace_settings')
-      .select('whatsapp_number')
-      .eq('id', 1)
-      .maybeSingle();
-    const settingsErrorMessage = String(settingsRes.error?.message || '').toLowerCase();
-    const settingsTableMissing =
-      settingsErrorMessage.includes('relation "public.marketplace_settings" does not exist') ||
-      settingsErrorMessage.includes("could not find the table 'public.marketplace_settings'");
-    if (!settingsRes.error && settingsRes.data?.whatsapp_number) {
-      const normalizedNumber = normalizeWhatsappNumber(settingsRes.data.whatsapp_number);
-      if (normalizedNumber) {
-        setWhatsappNumber(normalizedNumber);
-      }
-    } else if (!settingsTableMissing && settingsRes.error) {
-      console.warn('Marketplace settings load error:', settingsRes.error);
-      setWhatsappNumber(DEFAULT_WHATSAPP_NUMBER);
-    } else {
-      setWhatsappNumber(DEFAULT_WHATSAPP_NUMBER);
-    }
 
     setProducts(nextProducts);
     setBanners(nextBanners);
@@ -279,6 +259,7 @@ function App() {
     cuotasUsd,
     interesUsd,
     whatsappNumber,
+    sellerName,
     estado,
     files,
     existingImages
@@ -307,6 +288,7 @@ function App() {
         cuotas_usd: cuotasUsd,
         interes_usd: interesUsd,
         whatsapp_number: normalizeWhatsappNumber(whatsappNumber) || DEFAULT_WHATSAPP_NUMBER,
+        seller_name: String(sellerName || '').trim() || DEFAULT_SELLER_NAME,
         estado,
         imagenes
       };
@@ -377,31 +359,6 @@ function App() {
     const { error } = await supabase.from('announcements').delete().eq('id', bannerId);
     if (error) throw error;
     await loadMarketplaceData();
-  };
-
-  const saveWhatsappNumber = async (nextNumber) => {
-    if (!supabase || !user) return;
-    const normalizedNumber = normalizeWhatsappNumber(nextNumber);
-    if (normalizedNumber.length < 8) {
-      throw new Error('El número de WhatsApp debe tener al menos 8 dígitos.');
-    }
-
-    const { error } = await supabase
-      .from('marketplace_settings')
-      .upsert(
-        {
-          id: 1,
-          whatsapp_number: normalizedNumber,
-          updated_by: user.id,
-          updated_at: new Date().toISOString()
-        },
-        { onConflict: 'id' }
-      );
-    if (error) {
-      throw new Error(error.message || 'No se pudo actualizar el número de WhatsApp.');
-    }
-
-    setWhatsappNumber(normalizedNumber);
   };
 
   const createCategory = async (name) => {
@@ -667,8 +624,6 @@ function App() {
               editingProduct={editingProduct}
               onSave={createOrUpdateProduct}
               onCancelEdit={() => setEditingProduct(null)}
-              whatsappNumber={whatsappNumber}
-              onSaveWhatsappNumber={saveWhatsappNumber}
               banners={banners}
               onCreateBanner={createBanner}
               onToggleBanner={toggleBanner}
@@ -754,7 +709,6 @@ function App() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  whatsappNumber={whatsappNumber}
                   isAdmin={actingAsAdmin}
                   onEdit={startEditProduct}
                   onDelete={removeProduct}
