@@ -12,7 +12,10 @@ function ProductCard({ product, whatsappNumber = '543815151163', isAdmin, onEdit
   const usdPrice = Number(product.precioUsd) || 0;
   const getOriginalPrice = (price) => Math.round(price * 1.2);
 
-  const whatsappDigits = String(whatsappNumber || '').replace(/\D/g, '') || '543815151163';
+  const whatsappDigits =
+    String(product.whatsappNumber || '').replace(/\D/g, '') ||
+    String(whatsappNumber || '').replace(/\D/g, '') ||
+    '543815151163';
   const message = `Hola, te escribo por ${product.title}`;
   const whatsappHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
 

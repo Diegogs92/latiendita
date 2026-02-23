@@ -10,7 +10,10 @@ function ProductModal({ product, whatsappNumber = '543815151163', isAdmin, onEdi
 
   const goTo = (index) => setCurrentIndex(((index % total) + total) % total);
 
-  const whatsappDigits = String(whatsappNumber || '').replace(/\D/g, '') || '543815151163';
+  const whatsappDigits =
+    String(product.whatsappNumber || '').replace(/\D/g, '') ||
+    String(whatsappNumber || '').replace(/\D/g, '') ||
+    '543815151163';
   const message = `Hola, te escribo por ${product.title}`;
   const whatsappHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
 

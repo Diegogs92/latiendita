@@ -19,6 +19,7 @@ create table if not exists public.products (
   cuotas int not null default 1 check (cuotas >= 1),
   interes numeric not null default 0 check (interes >= 0),
   imagenes text[] not null default '{}',
+  whatsapp_number text check (whatsapp_number is null or whatsapp_number ~ '^[0-9]{8,20}$'),
   creado_por uuid not null references auth.users(id) on delete restrict,
   fecha_creacion timestamptz not null default now(),
   estado text not null default 'Disponible' check (estado in ('Disponible', 'Vendido', 'Proximamente')),
@@ -35,7 +36,8 @@ alter table public.products
   add column if not exists cuotas_ars int default 1 check (cuotas_ars >= 1),
   add column if not exists interes_ars numeric default 0 check (interes_ars >= 0),
   add column if not exists cuotas_usd int default 1 check (cuotas_usd >= 1),
-  add column if not exists interes_usd numeric default 0 check (interes_usd >= 0);
+  add column if not exists interes_usd numeric default 0 check (interes_usd >= 0),
+  add column if not exists whatsapp_number text check (whatsapp_number is null or whatsapp_number ~ '^[0-9]{8,20}$');
 
 create table if not exists public.categories (
   id uuid primary key default gen_random_uuid(),

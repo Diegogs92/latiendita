@@ -108,6 +108,7 @@ function App() {
       interesArs: item.interes_ars || item.interes || 0,
       cuotasUsd: item.cuotas_usd || 1,
       interesUsd: item.interes_usd || 0,
+      whatsappNumber: normalizeWhatsappNumber(item.whatsapp_number) || DEFAULT_WHATSAPP_NUMBER,
       imagenes: item.imagenes || [],
       estado: item.estado,
       compradorId: item.comprador_id
@@ -277,6 +278,7 @@ function App() {
     interesArs,
     cuotasUsd,
     interesUsd,
+    whatsappNumber,
     estado,
     files,
     existingImages
@@ -304,6 +306,7 @@ function App() {
         interes_ars: interesArs,
         cuotas_usd: cuotasUsd,
         interes_usd: interesUsd,
+        whatsapp_number: normalizeWhatsappNumber(whatsappNumber) || DEFAULT_WHATSAPP_NUMBER,
         estado,
         imagenes
       };

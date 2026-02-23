@@ -21,6 +21,7 @@ const initialForm = {
   interesArs: 0,
   cuotasUsd: 1,
   interesUsd: 0,
+  whatsappNumber: '+543815151163',
   estado: 'Disponible',
   files: [],
   existingImages: []
@@ -150,6 +151,7 @@ function AdminPanel({
       interesArs: editingProduct.interesArs || 0,
       cuotasUsd: editingProduct.cuotasUsd || 1,
       interesUsd: editingProduct.interesUsd || 0,
+      whatsappNumber: `+${String(editingProduct.whatsappNumber || '543815151163').replace(/\D/g, '')}`,
       estado: editingProduct.estado,
       files: [],
       existingImages: editingProduct.imagenes || []
@@ -199,9 +201,15 @@ function AdminPanel({
     event.preventDefault();
     const precioArs = parseFormattedNumber(form.precioArs);
     const precioUsd = parseFormattedNumber(form.precioUsd);
+    const whatsappNumber = String(form.whatsappNumber || '').replace(/\D/g, '');
 
     if (!precioArs && !precioUsd) {
       setSaveError('Carga al menos un precio: ARS o USD.');
+      return;
+    }
+
+    if (whatsappNumber.length < 8) {
+      setSaveError('El WhatsApp de la publicación debe tener al menos 8 dígitos.');
       return;
     }
 
@@ -212,6 +220,7 @@ function AdminPanel({
         ...form,
         precioArs,
         precioUsd,
+        whatsappNumber,
         files: Array.from(form.files)
       });
       resetForm();
@@ -470,6 +479,17 @@ function AdminPanel({
           <option value="Vendido">Vendido</option>
           <option value="Proximamente">Próximamente</option>
         </select>
+
+        <label className="file-upload-label">
+          WhatsApp de esta publicación
+          <input
+            type="tel"
+            inputMode="tel"
+            placeholder="+543815151163"
+            value={form.whatsappNumber}
+            onChange={(e) => setForm((prev) => ({ ...prev, whatsappNumber: e.target.value }))}
+          />
+        </label>
 
         {form.existingImages.length > 0 && (
           <div className="admin-images-preview">
