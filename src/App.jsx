@@ -12,13 +12,6 @@ const DEFAULT_SELLER_NAME = 'Diego';
 const normalizeWhatsappNumber = (value) => String(value || '').replace(/\D/g, '');
 const PRIMARY_DOMAIN = 'latienditadediego.com.ar';
 
-function getPreferredOrigin() {
-  if (typeof window === 'undefined') return '';
-  const host = window.location.hostname.toLowerCase();
-  if (host === 'localhost' || host === '127.0.0.1') return window.location.origin;
-  return `https://${PRIMARY_DOMAIN}`;
-}
-
 function App() {
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
@@ -231,11 +224,11 @@ function App() {
   const handleLogin = async () => {
     if (!supabase) return;
 
-    const preferredOrigin = getPreferredOrigin() || window.location.origin;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${preferredOrigin}/admin`
+        // Keep callback on the same origin used to start OAuth (required by PKCE state handling).
+        redirectTo: `${window.location.origin}/admin`
       }
     });
   };
