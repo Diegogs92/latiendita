@@ -1,4 +1,17 @@
 {
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "latienditadediego.vercel.app"
+        }
+      ],
+      "destination": "https://latienditadediego.com.ar/$1",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/admin",
