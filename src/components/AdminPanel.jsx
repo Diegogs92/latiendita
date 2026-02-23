@@ -105,6 +105,8 @@ function AdminPanel({
   editingProduct,
   onSave,
   onCancelEdit,
+  whatsappNumber = '543815151163',
+  onSaveWhatsappNumber,
   banners = [],
   onCreateBanner,
   onToggleBanner,
@@ -120,6 +122,10 @@ function AdminPanel({
   const [bannerTone, setBannerTone] = useState('info');
   const [bannerSaving, setBannerSaving] = useState(false);
   const [bannerError, setBannerError] = useState('');
+  const [whatsappInput, setWhatsappInput] = useState(`+${whatsappNumber}`);
+  const [whatsappSaving, setWhatsappSaving] = useState(false);
+  const [whatsappError, setWhatsappError] = useState('');
+  const [whatsappSuccess, setWhatsappSuccess] = useState('');
   const [dolarType, setDolarType] = useState('blue');
   const [dolarData, setDolarData] = useState(null);
   const [dolarLoading, setDolarLoading] = useState(false);
@@ -157,6 +163,10 @@ function AdminPanel({
       setForm((prev) => ({ ...prev, subcategoryId: '' }));
     }
   }, [form.categoryId, form.subcategoryId, subcategories]);
+
+  useEffect(() => {
+    setWhatsappInput(`+${String(whatsappNumber || '').replace(/\D/g, '')}`);
+  }, [whatsappNumber]);
 
   const loadDolarQuote = async (selectedType = dolarType) => {
     setDolarLoading(true);
@@ -246,6 +256,29 @@ function AdminPanel({
       setBannerError(error?.message || 'No se pudo crear el cartel.');
     } finally {
       setBannerSaving(false);
+    }
+  };
+
+  const handleSaveWhatsapp = async (event) => {
+    event.preventDefault();
+    const normalized = String(whatsappInput || '').replace(/\D/g, '');
+    if (normalized.length < 8) {
+      setWhatsappError('Escribe un número válido (mínimo 8 dígitos).');
+      setWhatsappSuccess('');
+      return;
+    }
+
+    setWhatsappSaving(true);
+    setWhatsappError('');
+    setWhatsappSuccess('');
+    try {
+      await onSaveWhatsappNumber?.(normalized);
+      setWhatsappInput(`+${normalized}`);
+      setWhatsappSuccess('Número actualizado.');
+    } catch (error) {
+      setWhatsappError(error?.message || 'No se pudo actualizar el número de WhatsApp.');
+    } finally {
+      setWhatsappSaving(false);
     }
   };
 
@@ -480,6 +513,28 @@ function AdminPanel({
         </button>
         {saveError && <p className="status-text error-text">{saveError}</p>}
       </form>
+
+      <section className="contact-settings">
+        <div className="section-head">
+          <h2>WhatsApp</h2>
+        </div>
+        <form className="inline-form" onSubmit={handleSaveWhatsapp}>
+          <input
+            type="tel"
+            inputMode="tel"
+            placeholder="+543815151163"
+            value={whatsappInput}
+            onChange={(e) => setWhatsappInput(e.target.value)}
+          />
+          <div className="form-row">
+            <button type="submit" className="button" disabled={whatsappSaving}>
+              {whatsappSaving ? 'Guardando...' : 'Guardar número'}
+            </button>
+          </div>
+          {whatsappError && <p className="status-text error-text">{whatsappError}</p>}
+          {whatsappSuccess && <p className="status-text">{whatsappSuccess}</p>}
+        </form>
+      </section>
 
       <section className="banner-admin">
         <div className="section-head">

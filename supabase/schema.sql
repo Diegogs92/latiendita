@@ -86,6 +86,17 @@ create table if not exists public.announcements (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.marketplace_settings (
+  id int primary key check (id = 1),
+  whatsapp_number text not null default '543815151163' check (whatsapp_number ~ '^[0-9]{8,20}$'),
+  updated_by uuid references auth.users(id) on delete set null,
+  updated_at timestamptz not null default now()
+);
+
+insert into public.marketplace_settings (id, whatsapp_number)
+values (1, '543815151163')
+on conflict (id) do nothing;
+
 create index if not exists products_fecha_creacion_idx on public.products (fecha_creacion desc);
 create index if not exists comments_product_fecha_idx on public.comments (product_id, fecha desc);
 create index if not exists offers_product_fecha_idx on public.offers (product_id, fecha desc);
@@ -99,6 +110,7 @@ alter table public.offers enable row level security;
 alter table public.announcements enable row level security;
 alter table public.categories enable row level security;
 alter table public.subcategories enable row level security;
+alter table public.marketplace_settings enable row level security;
 
 drop policy if exists products_select_all on public.products;
 create policy products_select_all on public.products for select using (true);
@@ -191,6 +203,20 @@ drop policy if exists subcategories_delete_admin on public.subcategories;
 create policy subcategories_delete_admin on public.subcategories
 for delete to authenticated
 using (public.is_admin());
+
+drop policy if exists marketplace_settings_select_all on public.marketplace_settings;
+create policy marketplace_settings_select_all on public.marketplace_settings for select using (true);
+
+drop policy if exists marketplace_settings_insert_admin on public.marketplace_settings;
+create policy marketplace_settings_insert_admin on public.marketplace_settings
+for insert to authenticated
+with check (public.is_admin());
+
+drop policy if exists marketplace_settings_update_admin on public.marketplace_settings;
+create policy marketplace_settings_update_admin on public.marketplace_settings
+for update to authenticated
+using (public.is_admin())
+with check (public.is_admin());
 
 create or replace function public.buy_product(p_product_id uuid)
 returns void

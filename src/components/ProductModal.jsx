@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { formatUsageDuration } from '../utils/usageTime';
 
-function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, onClose }) {
+function ProductModal({ product, whatsappNumber = '543815151163', isAdmin, onEdit, onDelete, onMarkUnavailable, onClose }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showAllSpecs, setShowAllSpecs] = useState(false);
   const panelRef = useRef(null);
@@ -10,9 +10,9 @@ function ProductModal({ product, isAdmin, onEdit, onDelete, onMarkUnavailable, o
 
   const goTo = (index) => setCurrentIndex(((index % total) + total) % total);
 
-  const whatsappNumber = '543815151163';
+  const whatsappDigits = String(whatsappNumber || '').replace(/\D/g, '') || '543815151163';
   const message = `Hola, te escribo por ${product.title}`;
-  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  const whatsappHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
 
   const specs = (product.description || '')
     .split(/\n+/)

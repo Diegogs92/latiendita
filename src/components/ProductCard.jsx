@@ -2,7 +2,7 @@ import { useState } from 'react';
 import ProductModal from './ProductModal';
 import { formatUsageDuration } from '../utils/usageTime';
 
-function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) {
+function ProductCard({ product, whatsappNumber = '543815151163', isAdmin, onEdit, onDelete, onMarkUnavailable }) {
   const [showModal, setShowModal] = useState(false);
   const images = product.imagenes || [];
   const cover = images[0];
@@ -12,9 +12,9 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) 
   const usdPrice = Number(product.precioUsd) || 0;
   const getOriginalPrice = (price) => Math.round(price * 1.2);
 
-  const whatsappNumber = '543815151163';
+  const whatsappDigits = String(whatsappNumber || '').replace(/\D/g, '') || '543815151163';
   const message = `Hola, te escribo por ${product.title}`;
-  const whatsappHref = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  const whatsappHref = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
 
   const financingLines = [];
   const usageLabel = formatUsageDuration(product.tiempoUso);
@@ -110,6 +110,7 @@ function ProductCard({ product, isAdmin, onEdit, onDelete, onMarkUnavailable }) 
       {showModal && (
         <ProductModal
           product={product}
+          whatsappNumber={whatsappDigits}
           isAdmin={isAdmin}
           onEdit={onEdit}
           onDelete={onDelete}
