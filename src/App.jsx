@@ -531,7 +531,13 @@ function App() {
         <header className="topbar">
           <div className="brand">
             <img className="brand-logo" src="/logo.svg" alt="Logo La tiendita de Diego" />
-            <h1 className="friendly-title">La tiendita de Diego</h1>
+            <div className="brand-copy">
+              <h1 className="friendly-title">
+                <span className="friendly-title-main">La tiendita</span>
+                <span className="friendly-title-accent">de Diego</span>
+              </h1>
+              <p className="brand-note">Encontrá lo que buscás</p>
+            </div>
           </div>
         </header>
 
@@ -553,7 +559,13 @@ function App() {
       <header className="topbar">
         <div className="brand">
           <img className="brand-logo" src="/logo.svg" alt="Logo La tiendita de Diego" />
-          <h1 className="friendly-title">La tiendita de Diego</h1>
+          <div className="brand-copy">
+            <h1 className="friendly-title">
+              <span className="friendly-title-main">La tiendita</span>
+              <span className="friendly-title-accent">de Diego</span>
+            </h1>
+            <p className="brand-note">Encontrá lo que buscás</p>
+          </div>
         </div>
 
         <AuthBar

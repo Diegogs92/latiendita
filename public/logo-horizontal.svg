@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 220" role="img" aria-labelledby="logo-horizontal-title logo-horizontal-desc">
+  <title id="logo-horizontal-title">Logo horizontal de La tiendita de Diego</title>
+  <desc id="logo-horizontal-desc">Escaparate frontal amigable con volumen suave junto al nombre La tiendita de Diego.</desc>
+  <defs>
+    <linearGradient id="iconFrame" x1="42" y1="24" x2="196" y2="194" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#355844" />
+      <stop offset="1" stop-color="#1D3529" />
+    </linearGradient>
+    <linearGradient id="iconAwning" x1="48" y1="74" x2="174" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC985" />
+      <stop offset="1" stop-color="#D87A46" />
+    </linearGradient>
+    <linearGradient id="iconWindow" x1="54" y1="70" x2="166" y2="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F3FBFF" />
+      <stop offset="1" stop-color="#BFE5F8" />
+    </linearGradient>
+    <linearGradient id="iconDoor" x1="124" y1="118" x2="152" y2="168" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4BA36F" />
+      <stop offset="1" stop-color="#2D7248" />
+    </linearGradient>
+  </defs>
+
+  <rect x="24" y="24" width="172" height="172" rx="52" fill="url(#iconFrame)" />
+  <rect x="30" y="30" width="160" height="160" rx="46" fill="#FFF8EF" />
+  <rect x="36" y="36" width="148" height="148" rx="40" fill="#FFF0D3" opacity=".68" />
+  <rect x="54" y="70" width="112" height="98" rx="24" fill="#F4D7AB" stroke="#214131" stroke-width="7" />
+  <path d="M62 62H158C166.837 62 174 69.163 174 78V88H46V78C46 69.163 53.163 62 62 62Z" fill="#214131" />
+  <path d="M46 80H174V94C174 104.493 165.493 113 155 113H65C54.507 113 46 104.493 46 94V80Z" fill="url(#iconAwning)" />
+  <path d="M46 83H174" stroke="#FFD5A1" stroke-width="5" stroke-linecap="round" opacity=".7" />
+  <path d="M62 80V112" stroke="#FFF8EF" stroke-width="8" stroke-linecap="round" />
+  <path d="M84 80V112" stroke="#D87A46" stroke-width="8" stroke-linecap="round" />
+  <path d="M106 80V112" stroke="#FFF8EF" stroke-width="8" stroke-linecap="round" />
+  <path d="M128 80V112" stroke="#D87A46" stroke-width="8" stroke-linecap="round" />
+  <path d="M150 80V112" stroke="#FFF8EF" stroke-width="8" stroke-linecap="round" />
+  <rect x="54" y="118" width="56" height="50" rx="10" fill="url(#iconWindow)" stroke="#214131" stroke-width="6" />
+  <path d="M82 118V168" stroke="#F7FEFF" stroke-width="6" stroke-linecap="round" />
+  <path d="M54 142H110" stroke="#F7FEFF" stroke-width="6" stroke-linecap="round" />
+  <rect x="124" y="118" width="28" height="50" rx="8" fill="url(#iconDoor)" stroke="#214131" stroke-width="6" />
+
+  <text x="234" y="82" fill="#3B5A49" font-family="'Nunito', 'Trebuchet MS', sans-serif" font-size="20" font-weight="800" letter-spacing="2.2">
+    ESCAPARATE DIGITAL DE BARRIO
+  </text>
+  <text x="234" y="132" fill="#203A2D" font-family="'Nunito', 'Trebuchet MS', sans-serif" font-size="48" font-weight="800" letter-spacing="-1.8">
+    La tiendita
+  </text>
+  <text x="514" y="132" fill="#D1763E" font-family="'Nunito', 'Trebuchet MS', sans-serif" font-size="48" font-weight="800" letter-spacing="-1.8">
+    de Diego
+  </text>
+  <text x="234" y="172" fill="#5B695E" font-family="'Segoe UI', sans-serif" font-size="24" font-weight="700">
+    Encontrá lo que buscás
+  </text>
+</svg>

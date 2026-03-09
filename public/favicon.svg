@@ -1,7 +1,16 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="4" y="4" width="56" height="56" rx="16" fill="#16A34A"/>
-  <path d="M14 30L32 18L50 30V33H14V30Z" fill="#111827"/>
-  <rect x="18" y="33" width="28" height="19" rx="5" fill="#111827"/>
-  <rect x="22" y="37" width="20" height="11" rx="3" fill="#F9FAFB"/>
-  <path d="M30 40H39V45H30C28.3431 45 27 43.6569 27 42C27 40.3431 28.3431 39 30 39V40Z" fill="#16A34A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="La tiendita de Diego">
+  <rect x="4" y="4" width="56" height="56" rx="18" fill="#244333" />
+  <rect x="7" y="7" width="50" height="50" rx="15" fill="#FFF8EF" />
+  <rect x="9" y="9" width="46" height="46" rx="13" fill="#FFF0D3" opacity=".68" />
+  <rect x="16" y="20" width="32" height="28" rx="8" fill="#D7EEF9" stroke="#214131" stroke-width="2.2" />
+  <path d="M18 17H46C48.761 17 51 19.239 51 22V24H13V22C13 19.239 15.239 17 18 17Z" fill="#214131" />
+  <path d="M13 22H51V27C51 31.418 47.418 35 43 35H21C16.582 35 13 31.418 13 27V22Z" fill="#E39A52" />
+  <path d="M13 23.5H51" stroke="#FFD5A1" stroke-width="1.8" stroke-linecap="round" opacity=".72" />
+  <path d="M18 22V34" stroke="#FFF8EF" stroke-width="3.2" stroke-linecap="round" />
+  <path d="M25 22V34" stroke="#CF763D" stroke-width="3.2" stroke-linecap="round" />
+  <path d="M32 22V34" stroke="#FFF8EF" stroke-width="3.2" stroke-linecap="round" />
+  <path d="M39 22V34" stroke="#CF763D" stroke-width="3.2" stroke-linecap="round" />
+  <path d="M32 36V47" stroke="#F7FEFF" stroke-width="2.6" stroke-linecap="round" />
+  <path d="M18 41H32" stroke="#F7FEFF" stroke-width="2.6" stroke-linecap="round" />
+  <rect x="36" y="36" width="10" height="15" rx="3.5" fill="#3F9763" stroke="#214131" stroke-width="1.6" />
 </svg>

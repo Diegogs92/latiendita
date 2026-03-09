@@ -1,30 +1,80 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="logo-title logo-desc">
+  <title id="logo-title">Logo de La tiendita de Diego</title>
+  <desc id="logo-desc">Un escaparate frontal amigable con volumen suave, toldo y puerta redondeada.</desc>
+  <style>
+    .awning {
+      transform-box: fill-box;
+      transform-origin: center top;
+      animation: awning-bob 5s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    }
+
+    @keyframes awning-bob {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(1.5px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .awning {
+        animation: none;
+      }
+    }
+  </style>
   <defs>
-    <linearGradient id="bg" x1="56" y1="40" x2="456" y2="480" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#22C55E"/>
-      <stop offset="1" stop-color="#15803D"/>
+    <linearGradient id="frame" x1="74" y1="52" x2="436" y2="460" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#355844" />
+      <stop offset="1" stop-color="#1D3529" />
     </linearGradient>
-    <linearGradient id="roof" x1="118" y1="128" x2="398" y2="224" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#111827"/>
-      <stop offset="1" stop-color="#1F2937"/>
+    <linearGradient id="awningColor" x1="126" y1="178" x2="388" y2="250" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC985" />
+      <stop offset=".55" stop-color="#F2A65D" />
+      <stop offset="1" stop-color="#D87A46" />
     </linearGradient>
-    <linearGradient id="letter" x1="208" y1="252" x2="304" y2="352" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#34D399"/>
-      <stop offset="1" stop-color="#16A34A"/>
+    <linearGradient id="storeFront" x1="144" y1="208" x2="370" y2="390" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF6E3" />
+      <stop offset="1" stop-color="#E8C892" />
     </linearGradient>
-    <linearGradient id="shine" x1="98" y1="82" x2="410" y2="392" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" stop-opacity="0.38"/>
-      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    <linearGradient id="windowGlass" x1="154" y1="278" x2="262" y2="372" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F3FBFF" />
+      <stop offset="1" stop-color="#BFE5F8" />
+    </linearGradient>
+    <linearGradient id="doorColor" x1="274" y1="278" x2="358" y2="394" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4BA36F" />
+      <stop offset="1" stop-color="#2D7248" />
+    </linearGradient>
+    <linearGradient id="shine" x1="150" y1="184" x2="292" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity=".46" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
     </linearGradient>
   </defs>
 
-  <rect x="28" y="28" width="456" height="456" rx="120" fill="#0F172A"/>
-  <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
-  <rect x="68" y="68" width="376" height="376" rx="92" fill="url(#shine)"/>
+  <rect x="28" y="28" width="456" height="456" rx="136" fill="url(#frame)" />
+  <rect x="46" y="46" width="420" height="420" rx="120" fill="#FFF8EF" />
+  <rect x="58" y="58" width="396" height="396" rx="108" fill="#FFF2DB" opacity=".78" />
 
-  <path d="M96 218L256 110L416 218V244H96V218Z" fill="url(#roof)"/>
-  <rect x="124" y="242" width="264" height="176" rx="26" fill="#111827"/>
-  <rect x="168" y="276" width="176" height="110" rx="18" fill="#F9FAFB"/>
-  <path d="M210 276H260C305.287 276 342 301.072 342 332C342 362.928 305.287 388 260 388H210V276Z" fill="url(#letter)"/>
-  <path d="M244 304H260C287.614 304 310 316.536 310 332C310 347.464 287.614 360 260 360H244V304Z" fill="#ECFDF5"/>
+  <rect x="132" y="174" width="248" height="220" rx="52" fill="url(#storeFront)" stroke="#214131" stroke-width="10" />
+  <path d="M146 382H366" stroke="#D6B07A" stroke-width="12" stroke-linecap="round" opacity=".85" />
+  <path d="M146 160H366C379.255 160 390 170.745 390 184V202H122V184C122 170.745 132.745 160 146 160Z" fill="#214131" />
+
+  <g class="awning">
+    <path d="M122 192H390V226C390 247.539 372.539 265 351 265H161C139.461 265 122 247.539 122 226V192Z" fill="url(#awningColor)" />
+    <path d="M122 198H390" stroke="#FFD8A6" stroke-width="10" stroke-linecap="round" opacity=".62" />
+    <path d="M154 192V262" stroke="#FFF9F1" stroke-width="18" stroke-linecap="round" />
+    <path d="M205 192V262" stroke="#D87A46" stroke-width="18" stroke-linecap="round" />
+    <path d="M256 192V262" stroke="#FFF9F1" stroke-width="18" stroke-linecap="round" />
+    <path d="M307 192V262" stroke="#D87A46" stroke-width="18" stroke-linecap="round" />
+    <path d="M358 192V262" stroke="#FFF9F1" stroke-width="18" stroke-linecap="round" />
+  </g>
+
+  <rect x="154" y="278" width="108" height="94" rx="26" fill="url(#windowGlass)" stroke="#214131" stroke-width="8" />
+  <rect x="274" y="278" width="84" height="116" rx="26" fill="url(#doorColor)" stroke="#214131" stroke-width="8" />
+  <path d="M208 286V364" stroke="#F7FEFF" stroke-width="8" stroke-linecap="round" />
+  <path d="M162 326H254" stroke="#F7FEFF" stroke-width="8" stroke-linecap="round" />
+  <path d="M166 290C182 278 208 272 234 274" fill="none" stroke="url(#shine)" stroke-width="12" stroke-linecap="round" />
+  <circle cx="338" cy="338" r="6" fill="#FFF9F1" />
+  <path d="M168 252H344" stroke="#F7E8C8" stroke-width="10" stroke-linecap="round" opacity=".95" />
+  <path d="M182 402C205 414 230 420 256 420C285 420 312 414 334 402" fill="none" stroke="#FFF5E6" stroke-width="12" stroke-linecap="round" opacity=".55" />
 </svg>
