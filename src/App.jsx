@@ -530,7 +530,7 @@ function App() {
       <div className="app-shell">
         <header className="topbar">
           <div className="brand">
-            <img className="brand-logo" src="/logo.svg" alt="Logo La tiendita de Diego" />
+            <img className="brand-logo" src="/newlogo.png" alt="Logo La tiendita de Diego" />
             <div className="brand-copy">
               <h1 className="friendly-title">
                 <span className="friendly-title-main">La tiendita</span>
@@ -558,7 +558,7 @@ function App() {
     <div className="app-shell">
       <header className="topbar">
         <div className="brand">
-          <img className="brand-logo" src="/logo.svg" alt="Logo La tiendita de Diego" />
+          <img className="brand-logo" src="/newlogo.png" alt="Logo La tiendita de Diego" />
           <div className="brand-copy">
             <h1 className="friendly-title">
               <span className="friendly-title-main">La tiendita</span>
